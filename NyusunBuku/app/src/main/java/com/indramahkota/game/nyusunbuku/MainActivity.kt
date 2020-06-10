@@ -22,7 +22,11 @@ class MainActivity : AppCompatActivity() {
         webView.settings.loadWithOverviewMode = true
         webView.settings.useWideViewPort = true
         webView.settings.domStorageEnabled = true
+        webView.settings.blockNetworkImage = false
+        webView.settings.allowFileAccess = true
+        webView.settings.allowContentAccess = true
+        webView.settings.allowUniversalAccessFromFileURLs = true
 
-        webView.loadUrl("file:///android_asset/index.html")
+            webView.loadUrl("file:///android_asset/index.html")
     }
 }
