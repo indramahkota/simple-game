@@ -1,0 +1,13 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: black;
+}
+
+canvas {
+  touch-action: none;
+  -ms-touch-action: none;
+}

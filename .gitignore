@@ -1,0 +1,9 @@
+gameku/dist/
+gameku/node_modules/
+gamekuAndroid/dist/
+gamekuAndroid/node_modules/
+NyusunBuku/build/
+NyusunBuku/gradle/
+NyusunBuku/.idea/
+NyusunBuku/.gradle/
+NyusunBuku/app/src/main/assets/
