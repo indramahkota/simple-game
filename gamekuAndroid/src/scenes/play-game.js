@@ -11,12 +11,14 @@ import smallFontImg from "../assets/fonts/smallfont.png";
 import ground from "../assets/sprites/ground.png";
 import sky from "../assets/sprites/sky.png";
 import book from "../assets/sprites/book.png";
+import bookFrame from "../assets/sprites/book-frame.png";
 
 //Sound Assets
 // import backSoundMp from "../assets/sounds/backsound.mp3";
 // import backSoundOg from "../assets/sounds/backsound.ogg";
 // import gameOverMp from "../assets/sounds/gameover.mp3";
 // import gameOverOg from "../assets/sounds/gameover.ogg";
+
 import hit1Mp from "../assets/sounds/hit01.mp3";
 import hit1Og from "../assets/sounds/hit01.ogg";
 import hit2Mp from "../assets/sounds/hit02.mp3";
@@ -36,6 +38,7 @@ export default class playGame extends Phaser.Scene {
         this.load.image("ground", ground);
         this.load.image("sky", sky);
         this.load.image("book", book);
+        this.load.image("book_frame", bookFrame);
         //load font assets
         this.load.bitmapFont("font", normalFontImg, normalFont);
         this.load.bitmapFont("smallfont", smallFontImg, smallFont);
@@ -98,7 +101,7 @@ export default class playGame extends Phaser.Scene {
         this.scoreText.visible = false;
         this.actionCamera.ignore(this.scoreText);
 
-        this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "skor tertinggi: " + this.savedData.score, 32);
+        this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
         this.actionCamera.ignore(this.highscoreText);
     }
@@ -216,6 +219,8 @@ export default class playGame extends Phaser.Scene {
 
     addFallingBook() {
         let fallingBook = this.matter.add.sprite(this.movingBook.x, this.movingBook.y, "book");
+        fallingBook.setMass(2);
+        fallingBook.setFrictionStatic(10);
         fallingBook.body.isBook = true;
         fallingBook.body.hit = false;
         this.bookGroup.add(fallingBook);
@@ -271,8 +276,10 @@ export default class playGame extends Phaser.Scene {
             //membuat timer event baru secara loop dan callback fungsi untuk menghapus buku
             //sampai buku dalam bookGroup habis, timer baru tersebut akan di hapus
             this.time.addEvent({
-                delay: 2000,
+                delay: 3000,
                 callback: function () {
+                    this.matter.world.destroy();
+
                     this.bookGroup.getChildren().forEach(function (book) {
                         if (book.body.hit) {
                             book.sign = Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight);
@@ -315,24 +322,22 @@ export default class playGame extends Phaser.Scene {
             //this.bookGroup.getFirstAlive().destroy();
             //this.bookGroup.getChildren()[this.bookGroup.getChildren().length - 1].destroy();
             let dek = this.bookGroup.getChildren()[0];
-            let rect = new Phaser.Geom.Rectangle(0, 0, dek.width, dek.height);
-            rect.setPosition(dek.x - dek.width / 2, dek.y - dek.height / 2);
-
-            let graphics = this.add.graphics({ lineStyle: { color: 0xff0000 } });
-            graphics.strokeRectShape(rect);
-            //this.cameras.main.ignore(graphics);
-            this.cameras.main.ignore(graphics);
-            //this.actionCamera.ignore(graphics);
 
             this.score += dek.sign;
-            this.scoreText.text = "Score: " + this.score.toString();
+            this.scoreText.text = "Skor: " + this.score.toString();
             this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
             this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
             this.removeBookSound.play();
 
-            let a = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
-            a.setOrigin(0.5, 0.5);
-            this.cameras.main.ignore(a);
+            let num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
+            num.setOrigin(0.5, 0.5);
+            this.cameras.main.ignore(num);
+
+            let frame = this.matter.add.sprite(dek.x, dek.y, "book_frame");
+            frame.rotation = dek.rotation;
+            this.cameras.main.ignore(frame);
+            frame.setStatic(true);
+
             dek.destroy();
 
             //this.bookGroup.getChildren()[0].destroy();
