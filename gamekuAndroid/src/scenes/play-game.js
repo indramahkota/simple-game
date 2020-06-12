@@ -282,6 +282,9 @@ export default class playGame extends Phaser.Scene {
 
                     this.bookGroup.getChildren().forEach(function (book) {
                         if (book.body.hit) {
+                            //rumus menghitung tumpukkan bukunya berdasarkan tinggi buku,
+                            //misal: posisi ground = 300, posisi buku berdasarkan tinggi buku = 99,
+                            //rumus tumpukan pertama = (300 - (300 - 99)) / 99 = 99/99 = 1. dst untuk tumpukkan atasnya
                             book.sign = Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight);
                         }
                     }, this);
