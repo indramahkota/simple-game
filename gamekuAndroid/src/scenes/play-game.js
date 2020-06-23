@@ -1,4 +1,5 @@
 import gameOptions from "../constants/game-options.js";
+//import utilities from "../constants/android-utilities.js";
 
 /* Load Assets with file-loader */
 //Font Assets
@@ -52,16 +53,26 @@ export default class playGame extends Phaser.Scene {
     }
 
     create() {
+        //utilities.showAndroidToast("Hello World!");
+        //utilities.showAndroidPopUp();
+
         // mendapatkan definisi texture
         this.GROUNDWIDTH = this.textures.get('ground').getSourceImage().width;
         this.GROUNDHEIGHT = this.textures.get('ground').getSourceImage().height;
         this.BOOKWIDTH = this.textures.get('book').getSourceImage().width;
         this.BOOKHEIGHT = this.textures.get('book').getSourceImage().height;
 
+        //Fixed Update time step is 30hz (0.033s), physics operations occur once every 0.033 seconds.
+        /* By default, physics operations occur once every 0.02 seconds, or 50hz.
+            Each FixedUpdate call is bound to the physics engine,
+            and a change of the physics timescale will result in a change of the speed of the FixedUpdate. */
+        
         this.matter.world.update30Hz();
         this.canDrop = true;
         this.timer = 0;
-        this.maxHeightTest = 0;
+        
+        //this.maxHeightTest = 0;
+        
         this.timerEvent = null;
         this.addSky();
         this.addGround();

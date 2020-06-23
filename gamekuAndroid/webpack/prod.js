@@ -1,6 +1,7 @@
 const merge = require("webpack-merge");
 const base = require("./base");
 const TerserPlugin = require("terser-webpack-plugin");
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = merge(base, {
   mode: "production",
@@ -24,6 +25,14 @@ module.exports = merge(base, {
       }),
     ]
   },
+  plugins: [
+    new FileManagerPlugin({
+      onEnd: {
+        copy: [
+          { source: 'dist', destination: '../NyusunBuku/app/src/main/assets/' }
+        ]
+      }
+  })],
   module: {
     rules: [
       {
