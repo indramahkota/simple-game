@@ -67,6 +67,8 @@ export default class playGame extends Phaser.Scene {
             Each FixedUpdate call is bound to the physics engine,
             and a change of the physics timescale will result in a change of the speed of the FixedUpdate. */
 
+        this.gamePlayed = false;
+
         this.matter.world.update30Hz();
         this.canDrop = true;
         this.timer = 0;
@@ -83,6 +85,8 @@ export default class playGame extends Phaser.Scene {
         this.savedData = localStorage.getItem(gameOptions.localStorageName) == null ? { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
         this.hitSound = [this.sound.add("hit01"), this.sound.add("hit02"), this.sound.add("hit03")];
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
+        this.timeText.visible = false;
+        
         this.bookGroup = this.add.group();
         this.matter.world.on("collisionstart", this.checkCollision, this);
         this.setCameras();
@@ -108,12 +112,16 @@ export default class playGame extends Phaser.Scene {
         // this.backgroundMusic.play();
 
         this.scoreText = this.add.bitmapText(this.sys.game.config.width / 2, this.sys.game.config.height / 2, "smallfont", "Skor: 0", 32);
+        this.scoreText.visible = false;
+        
         this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
         this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
         this.scoreText.visible = false;
         this.actionCamera.ignore(this.scoreText);
 
         this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
+        this.highscoreText.visible = false;
+        
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
         this.actionCamera.ignore(this.highscoreText);
     }
@@ -122,6 +130,8 @@ export default class playGame extends Phaser.Scene {
         //menambahkan background sky dengan posisi default = (0,0) dan,
         //titik acuan posisinya di tengah gambar
         this.sky = this.add.image(0, 0, "sky");
+        //this.sky.visible = false;
+
         //mengubah ukuran sky agar mengcover layar full screen
         this.sky.setDisplaySize(gameOptions.gameWidth, gameOptions.gameHeight);
         //mengubah posisi sky menjadi tengah-tengah screen
@@ -132,6 +142,8 @@ export default class playGame extends Phaser.Scene {
 
     addGround() {
         this.ground = this.matter.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height, "ground");
+        this.ground.visible = false;
+        
         this.ground.setBody({
             type: "rectangle",
             width: this.ground.displayWidth,
@@ -147,6 +159,8 @@ export default class playGame extends Phaser.Scene {
         //menempatkan buku di sebelah kanan dan menganimasikannya
         //menuju kearah kiri sampai ke posisi BOOKWIDTH
         this.movingBook = this.add.sprite(this.sys.game.config.width - this.BOOKWIDTH, 1.5 * this.BOOKHEIGHT, "book");
+        this.movingBook.visible = false;
+        
         //this.movingBook = this.add.sprite(this.sys.game.config.width / 2, this.BOOKWIDTH, "book");
         this.tweens.add({
             targets: this.movingBook,
@@ -189,6 +203,8 @@ export default class playGame extends Phaser.Scene {
     }
 
     dropBook() {
+        if(!this.gamePlayed) return;
+
         //fungsi yang di invoke saat pointerdown dan akan menjatuhkan buku ketika canDrop=true
         this.input.stopPropagation();
         if (this.canDrop && this.timer < gameOptions.timeLimit) {
