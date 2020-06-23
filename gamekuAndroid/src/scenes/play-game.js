@@ -66,13 +66,13 @@ export default class playGame extends Phaser.Scene {
         /* By default, physics operations occur once every 0.02 seconds, or 50hz.
             Each FixedUpdate call is bound to the physics engine,
             and a change of the physics timescale will result in a change of the speed of the FixedUpdate. */
-        
+
         this.matter.world.update30Hz();
         this.canDrop = true;
         this.timer = 0;
-        
+
         //this.maxHeightTest = 0;
-        
+
         this.addPoint = 0;
         this.timerEvent = null;
         this.addSky();
@@ -116,8 +116,6 @@ export default class playGame extends Phaser.Scene {
         this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
         this.actionCamera.ignore(this.highscoreText);
-
-        //this.PlayButton = this.add.bu
     }
 
     addSky() {
@@ -197,28 +195,60 @@ export default class playGame extends Phaser.Scene {
             this.addTimer();
             this.addPoint += 1;
 
-            if(this.addPoint === 5) {
+            if (this.addPoint === 5) {
                 this.timer -= 2;
-            } else if(this.addPoint === 7) {
+                this.showToast("Mendapatkan tambahan waktu 2 detik.");
+            } else if (this.addPoint === 7) {
                 this.timer -= 5;
-            } else if(this.addPoint === 9) {
+                this.showToast("Mendapatkan tambahan waktu 5 detik.");
+            } else if (this.addPoint === 9) {
                 this.timer -= 8;
-            } else if(this.addPoint === 11) {
+                this.showToast("Mendapatkan tambahan waktu 8 detik.");
+            } else if (this.addPoint === 11) {
                 this.timer -= 11;
-            } else if(this.addPoint === 13) {
+                this.showToast("Mendapatkan tambahan waktu 11 detik.");
+            } else if (this.addPoint === 13) {
                 this.timer -= 14;
-            } else if(this.addPoint === 15) {
+                this.showToast("Mendapatkan tambahan waktu 14 detik.");
+            } else if (this.addPoint === 15) {
                 this.timer -= 17;
-            } else if(this.addPoint === 17) {
+                this.showToast("Mendapatkan tambahan waktu 17 detik.");
+            } else if (this.addPoint === 17) {
                 this.timer -= 20;
-            } else if(this.addPoint > 19) {
+                this.showToast("Mendapatkan tambahan waktu 20 detik.");
+            } else if (this.addPoint > 19) {
                 this.timer -= 23;
+                this.showToast("Mendapatkan tambahan waktu 23 detik.");
             }
 
             this.canDrop = false;
             this.movingBook.visible = false;
             this.addFallingBook();
         }
+    }
+
+    showToast(text) {
+        let bg = this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e);
+        let tex = this.add.text(0, 0, '', {
+            fontSize: '24px'
+        });
+
+        this.actionCamera.ignore(bg);
+        this.actionCamera.ignore(tex);
+
+        this.toast = this.rexUI.add.toast({
+            x: this.cameras.main.centerX,
+            y: this.cameras.main.centerY,
+
+            background: bg,
+            text: tex,
+            space: {
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: 20,
+            },
+        }).show(text)
     }
 
     update() {
