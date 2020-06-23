@@ -1,12 +1,13 @@
-const merge = require("webpack-merge");
 const base = require("./base");
+const merge = require("webpack-merge");
 const TerserPlugin = require("terser-webpack-plugin");
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = merge(base, {
   mode: "production",
   output: {
-    filename: "bundle.min.js"
+    filename: "bundle.min.js",
+    chunkFilename: '[name].min.js',
   },
   devtool: false,
   performance: {
@@ -23,7 +24,16 @@ module.exports = merge(base, {
         },
         extractComments: false,
       }),
-    ]
+    ],
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/](phaser)[\\/]/,
+          name: 'vendors/phaser',
+          chunks: 'all',
+        }
+      }
+    }
   },
   plugins: [
     new FileManagerPlugin({
@@ -32,11 +42,12 @@ module.exports = merge(base, {
           { source: 'dist', destination: '../NyusunBuku/app/src/main/assets/' }
         ]
       }
-  })],
+    })
+  ],
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js$/i,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",

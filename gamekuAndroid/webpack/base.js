@@ -2,6 +2,10 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
+/* 
+  pada rule test: menggunakan regex untuk mencari file di directori
+*/
+
 module.exports = {
   entry: {
     index: './src/index.js'
@@ -16,14 +20,14 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.js$/,
+        test: /\.js$/i,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader"
         }
       },
       {
-        test: [/\.vert$/, /\.frag$/],
+        test: [/\.vert$/i, /\.frag$/i],
         use: "raw-loader"
       },
       {

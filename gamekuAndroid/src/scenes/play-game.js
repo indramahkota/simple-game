@@ -73,6 +73,7 @@ export default class playGame extends Phaser.Scene {
         
         //this.maxHeightTest = 0;
         
+        this.addPoint = 0;
         this.timerEvent = null;
         this.addSky();
         this.addGround();
@@ -115,6 +116,8 @@ export default class playGame extends Phaser.Scene {
         this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
         this.actionCamera.ignore(this.highscoreText);
+
+        //this.PlayButton = this.add.bu
     }
 
     addSky() {
@@ -145,7 +148,7 @@ export default class playGame extends Phaser.Scene {
     addMovingBook() {
         //menempatkan buku di sebelah kanan dan menganimasikannya
         //menuju kearah kiri sampai ke posisi BOOKWIDTH
-        this.movingBook = this.add.sprite(this.sys.game.config.width - this.BOOKWIDTH, this.BOOKWIDTH, "book");
+        this.movingBook = this.add.sprite(this.sys.game.config.width - this.BOOKWIDTH, 1.5 * this.BOOKHEIGHT, "book");
         //this.movingBook = this.add.sprite(this.sys.game.config.width / 2, this.BOOKWIDTH, "book");
         this.tweens.add({
             targets: this.movingBook,
@@ -192,6 +195,26 @@ export default class playGame extends Phaser.Scene {
         this.input.stopPropagation();
         if (this.canDrop && this.timer < gameOptions.timeLimit) {
             this.addTimer();
+            this.addPoint += 1;
+
+            if(this.addPoint === 5) {
+                this.timer -= 2;
+            } else if(this.addPoint === 7) {
+                this.timer -= 5;
+            } else if(this.addPoint === 9) {
+                this.timer -= 8;
+            } else if(this.addPoint === 11) {
+                this.timer -= 11;
+            } else if(this.addPoint === 13) {
+                this.timer -= 14;
+            } else if(this.addPoint === 15) {
+                this.timer -= 17;
+            } else if(this.addPoint === 17) {
+                this.timer -= 20;
+            } else if(this.addPoint > 19) {
+                this.timer -= 23;
+            }
+
             this.canDrop = false;
             this.movingBook.visible = false;
             this.addFallingBook();
@@ -209,6 +232,7 @@ export default class playGame extends Phaser.Scene {
                 //dan jika memenuhi persyaratan y-nya lebih besar dari tinggi screen
                 //kita akan menghapus objek buku nya
                 book.destroy();
+                this.addPoint = 0;
             }
         }, this);
     }
@@ -287,7 +311,7 @@ export default class playGame extends Phaser.Scene {
             //membuat timer event baru secara loop dan callback fungsi untuk menghapus buku
             //sampai buku dalam bookGroup habis, timer baru tersebut akan di hapus
             this.time.addEvent({
-                delay: 3000,
+                delay: 5000,
                 callback: function () {
                     this.matter.world.destroy();
 
