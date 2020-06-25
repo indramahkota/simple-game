@@ -14,6 +14,8 @@ import sky from "../assets/sprites/sky.png";
 import book from "../assets/sprites/book.png";
 import bookFrame from "../assets/sprites/book-frame.png";
 
+import mulaiButton from "../assets/sprites/mulai-button.png";
+
 //Sound Assets
 // import backSoundMp from "../assets/sounds/backsound.mp3";
 // import backSoundOg from "../assets/sounds/backsound.ogg";
@@ -40,6 +42,9 @@ export default class playGame extends Phaser.Scene {
         this.load.image("sky", sky);
         this.load.image("book", book);
         this.load.image("book_frame", bookFrame);
+
+        this.load.image("mulai_button", mulaiButton);
+
         //load font assets
         this.load.bitmapFont("font", normalFontImg, normalFont);
         this.load.bitmapFont("smallfont", smallFontImg, smallFont);
@@ -62,13 +67,45 @@ export default class playGame extends Phaser.Scene {
         this.BOOKWIDTH = this.textures.get('book').getSourceImage().width;
         this.BOOKHEIGHT = this.textures.get('book').getSourceImage().height;
 
+        this.addSky();
+        this.initMainMenu();
+        this.initPlayGame();
+    }
+
+    initMainMenu() {
+        this.gamePlayed = false;
+        this.buttonMulai = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, "mulai_button");
+
+        this.buttonMulai.setInteractive()
+            .on(Phaser.Input.Events.POINTER_DOWN, () => {
+                this.buttonMulai.scaleX = 0.9;
+                this.buttonMulai.scaleY = 0.9;
+
+                //log tidak berfungsi ketika object visible=false
+                //console.log("POINTER_DOWN");
+            })
+            .on(Phaser.Input.Events.POINTER_UP, () => {
+                this.buttonMulai.scaleX = 1;
+                this.buttonMulai.scaleY = 1;
+
+                setTimeout(() => {
+                    this.buttonMulai.visible = false;
+                    this.gamePlayed = true;
+
+                    this.timeText.visible = true;
+                    //this.scoreText.visible = true;
+                    this.highscoreText.visible = true;
+                    this.ground.visible = true;
+                    this.movingBook.visible = true;
+                }, 250);
+            })
+    }
+
+    initPlayGame() {
         //Fixed Update time step is 30hz (0.033s), physics operations occur once every 0.033 seconds.
         /* By default, physics operations occur once every 0.02 seconds, or 50hz.
             Each FixedUpdate call is bound to the physics engine,
             and a change of the physics timescale will result in a change of the speed of the FixedUpdate. */
-
-        this.gamePlayed = false;
-
         this.matter.world.update30Hz();
         this.canDrop = true;
         this.timer = 0;
@@ -77,7 +114,7 @@ export default class playGame extends Phaser.Scene {
 
         this.addPoint = 0;
         this.timerEvent = null;
-        this.addSky();
+
         this.addGround();
         this.addMovingBook();
         this.score = 0;
@@ -86,7 +123,7 @@ export default class playGame extends Phaser.Scene {
         this.hitSound = [this.sound.add("hit01"), this.sound.add("hit02"), this.sound.add("hit03")];
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
         this.timeText.visible = false;
-        
+
         this.bookGroup = this.add.group();
         this.matter.world.on("collisionstart", this.checkCollision, this);
         this.setCameras();
@@ -113,15 +150,14 @@ export default class playGame extends Phaser.Scene {
 
         this.scoreText = this.add.bitmapText(this.sys.game.config.width / 2, this.sys.game.config.height / 2, "smallfont", "Skor: 0", 32);
         this.scoreText.visible = false;
-        
+
         this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
         this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
-        this.scoreText.visible = false;
         this.actionCamera.ignore(this.scoreText);
 
         this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
         this.highscoreText.visible = false;
-        
+
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
         this.actionCamera.ignore(this.highscoreText);
     }
@@ -143,7 +179,7 @@ export default class playGame extends Phaser.Scene {
     addGround() {
         this.ground = this.matter.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height, "ground");
         this.ground.visible = false;
-        
+
         this.ground.setBody({
             type: "rectangle",
             width: this.ground.displayWidth,
@@ -160,7 +196,7 @@ export default class playGame extends Phaser.Scene {
         //menuju kearah kiri sampai ke posisi BOOKWIDTH
         this.movingBook = this.add.sprite(this.sys.game.config.width - this.BOOKWIDTH, 1.5 * this.BOOKHEIGHT, "book");
         this.movingBook.visible = false;
-        
+
         //this.movingBook = this.add.sprite(this.sys.game.config.width / 2, this.BOOKWIDTH, "book");
         this.tweens.add({
             targets: this.movingBook,
@@ -203,7 +239,7 @@ export default class playGame extends Phaser.Scene {
     }
 
     dropBook() {
-        if(!this.gamePlayed) return;
+        if (!this.gamePlayed) return;
 
         //fungsi yang di invoke saat pointerdown dan akan menjatuhkan buku ketika canDrop=true
         this.input.stopPropagation();
@@ -268,6 +304,8 @@ export default class playGame extends Phaser.Scene {
     }
 
     update() {
+        if (!this.gamePlayed) return;
+
         this.bookGroup.getChildren().forEach(function (book) {
             if (book.y > this.sys.game.config.height + book.displayHeight) {
                 //ketika objek hit bernilai salah (tidak bertumbukkan)
