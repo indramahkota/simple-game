@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Nyusun Buku</string>
     <string name="loading">loading…</string>
+    <string name="splash_screen">Splash Screen</string>
 </resources>

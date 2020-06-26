@@ -99,6 +99,10 @@ export default class playGame extends Phaser.Scene {
                     this.movingBook.visible = true;
                 }, 250);
             })
+            .on(Phaser.Input.Events.POINTER_OUT, () => {
+                this.buttonMulai.scaleX = 1;
+                this.buttonMulai.scaleY = 1;
+            })
     }
 
     initPlayGame() {
