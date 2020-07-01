@@ -3,7 +3,7 @@ import "./assets/styles/style.css";
 import Phaser from "phaser";
 import gameOptions from "./constants/game-options.js";
 import playGame from "./scenes/play-game.js";
-import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js';
+import RexUIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin.js";
 
 window.onload = function () {
     const ratio = window.innerHeight / window.innerWidth;
@@ -31,11 +31,13 @@ window.onload = function () {
             height: gameOptions.gameHeight
         },
         plugins: {
-            scene: [{
-                key: 'rexUI',
-                plugin: RexUIPlugin,
-                mapping: 'rexUI'
-            }]
+            scene: [
+                {
+                    key: "rexUI",
+                    plugin: RexUIPlugin,
+                    mapping: "rexUI",
+                },
+            ]
         },
         physics: {
             default: "matter",
@@ -50,7 +52,7 @@ window.onload = function () {
             disableWebAudio: true
         },
         scene: playGame
-    }
+    };
 
     new Phaser.Game(gameConfig);
     window.focus();

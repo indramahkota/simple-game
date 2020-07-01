@@ -1,5 +1,5 @@
 import gameOptions from "../constants/game-options.js";
-//import utilities from "../constants/android-utilities.js";
+import utilities from "../utilities/android-utilities.js";
 
 /* Load Assets with file-loader */
 //Font Assets
@@ -39,10 +39,10 @@ export default class playGame extends Phaser.Scene {
         //utilities.showAndroidPopUp();
 
         // mendapatkan definisi texture
-        this.GROUNDWIDTH = this.textures.get('ground').getSourceImage().width;
-        this.GROUNDHEIGHT = this.textures.get('ground').getSourceImage().height;
-        this.BOOKWIDTH = this.textures.get('book').getSourceImage().width;
-        this.BOOKHEIGHT = this.textures.get('book').getSourceImage().height;
+        this.GROUNDWIDTH = this.textures.get("ground").getSourceImage().width;
+        this.GROUNDHEIGHT = this.textures.get("ground").getSourceImage().height;
+        this.BOOKWIDTH = this.textures.get("book").getSourceImage().width;
+        this.BOOKHEIGHT = this.textures.get("book").getSourceImage().height;
 
         this.addSky();
         this.initMainMenu();
@@ -75,7 +75,7 @@ export default class playGame extends Phaser.Scene {
             .on(Phaser.Input.Events.POINTER_OUT, () => {
                 this.buttonMulai.scaleX = 1;
                 this.buttonMulai.scaleY = 1;
-            })
+            });
     }
 
     initPlayGame() {
@@ -97,6 +97,11 @@ export default class playGame extends Phaser.Scene {
         this.savedData = localStorage.getItem(gameOptions.localStorageName) == null ? { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
         
         //this.hitSound = [this.sound.add("hit01"), this.sound.add("hit02"), this.sound.add("hit03")];
+        this.hitSound = [
+            utilities.playHit1,
+            utilities.playHit2,
+            utilities.playHit3,
+        ];
         
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
         this.timeText.visible = false;
@@ -105,7 +110,7 @@ export default class playGame extends Phaser.Scene {
         this.matter.world.on("collisionstart", this.checkCollision, this);
         this.setCameras();
         this.input.on("pointerdown", this.dropBook, this);
-        
+
         // this.removeBookSound = this.sound.add("remove", {
         //     mute: false,
         //     volume: 1,
@@ -199,11 +204,11 @@ export default class playGame extends Phaser.Scene {
         //Phaser.Math.RND.pick(this.hitSound).play();
         //var delay = new Date().getMilliseconds() - this.lastSoundPlayed;
         //agar suara tidak terlalu cepat saat dimainkan
-        // var delay = Date.now() - this.lastSoundPlayed;
-        // if (delay > 200 && this.timer <= gameOptions.timeLimit) {
-        //     this.lastSoundPlayed = Date.now();
-        //     Phaser.Math.RND.pick(this.hitSound).play();
-        // }
+        var delay = Date.now() - this.lastSoundPlayed;
+        if (delay > 250 && this.timer <= gameOptions.timeLimit) {
+            this.lastSoundPlayed = Date.now();
+            Phaser.Math.RND.pick(this.hitSound)();
+        }
     }
 
     setCameras() {
@@ -267,7 +272,6 @@ export default class playGame extends Phaser.Scene {
         this.toast = this.rexUI.add.toast({
             x: this.cameras.main.centerX,
             y: this.cameras.main.centerY,
-
             background: bg,
             text: tex,
             space: {
@@ -427,6 +431,8 @@ export default class playGame extends Phaser.Scene {
             this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
             //this.removeBookSound.play();
 
+            utilities.playRemove();
+
             let num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
             num.setOrigin(0.5, 0.5);
             this.cameras.main.ignore(num);
@@ -451,6 +457,7 @@ export default class playGame extends Phaser.Scene {
         else {
             //this.removeBookSound.stop();
             // this.backgroundMusic.stop();
+            utilities.removeRemove();
             this.removeEvent.remove();
 
             localStorage.setItem(gameOptions.localStorageName, JSON.stringify({

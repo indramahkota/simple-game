@@ -1,7 +1,6 @@
 package com.indramahkota.game.nyusunbuku
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -42,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        webView.addJavascriptInterface(WebAppInterface(this), "Android")
         webView.loadUrl("file:///android_asset/index.html")
     }
 
