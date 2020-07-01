@@ -89,6 +89,7 @@ export default class playGame extends Phaser.Scene {
 
         this.addPoint = 0;
         this.timerEvent = null;
+        this.playOnce = false;
 
         this.addGround();
         this.addMovingBook();
@@ -431,7 +432,10 @@ export default class playGame extends Phaser.Scene {
             this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
             //this.removeBookSound.play();
 
-            utilities.playRemove();
+            if(!this.playOnce) {
+                this.playOnce = true;
+                utilities.playRemove();
+            }
 
             let num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
             num.setOrigin(0.5, 0.5);
@@ -457,6 +461,7 @@ export default class playGame extends Phaser.Scene {
         else {
             //this.removeBookSound.stop();
             // this.backgroundMusic.stop();
+            this.playOnce = false;
             utilities.removeRemove();
             this.removeEvent.remove();
 
