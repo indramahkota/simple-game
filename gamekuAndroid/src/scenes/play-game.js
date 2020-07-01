@@ -16,21 +16,6 @@ import bookFrame from "../assets/sprites/book-frame.png";
 
 import mulaiButton from "../assets/sprites/mulai-button.png";
 
-//Sound Assets
-// import backSoundMp from "../assets/sounds/backsound.mp3";
-// import backSoundOg from "../assets/sounds/backsound.ogg";
-// import gameOverMp from "../assets/sounds/gameover.mp3";
-// import gameOverOg from "../assets/sounds/gameover.ogg";
-
-import hit1Mp from "../assets/sounds/hit01.mp3";
-import hit1Og from "../assets/sounds/hit01.ogg";
-import hit2Mp from "../assets/sounds/hit02.mp3";
-import hit2Og from "../assets/sounds/hit02.ogg";
-import hit3Mp from "../assets/sounds/hit03.mp3";
-import hit3Og from "../assets/sounds/hit03.ogg";
-import removeMp from "../assets/sounds/remove.mp3";
-import removeOg from "../assets/sounds/remove.ogg";
-
 export default class playGame extends Phaser.Scene {
     constructor() {
         super("PlayGame");
@@ -42,19 +27,11 @@ export default class playGame extends Phaser.Scene {
         this.load.image("sky", sky);
         this.load.image("book", book);
         this.load.image("book_frame", bookFrame);
-
         this.load.image("mulai_button", mulaiButton);
 
         //load font assets
         this.load.bitmapFont("font", normalFontImg, normalFont);
         this.load.bitmapFont("smallfont", smallFontImg, smallFont);
-        //load audio assets
-        this.load.audio("hit01", [hit1Og, hit1Mp]);
-        this.load.audio("hit02", [hit2Og, hit2Mp]);
-        this.load.audio("hit03", [hit3Og, hit3Mp]);
-        this.load.audio("remove", [removeOg, removeMp]);
-        // this.load.audio("gameover", [gameOverOg, gameOverMp]);
-        // this.load.audio("backsound", [backSoundOg, backSoundMp]);
     }
 
     create() {
@@ -80,9 +57,7 @@ export default class playGame extends Phaser.Scene {
             .on(Phaser.Input.Events.POINTER_DOWN, () => {
                 this.buttonMulai.scaleX = 0.9;
                 this.buttonMulai.scaleY = 0.9;
-
-                //log tidak berfungsi ketika object visible=false
-                //console.log("POINTER_DOWN");
+                //console.log() tidak berfungsi ketika object visible=false
             })
             .on(Phaser.Input.Events.POINTER_UP, () => {
                 this.buttonMulai.scaleX = 1;
@@ -91,9 +66,7 @@ export default class playGame extends Phaser.Scene {
                 setTimeout(() => {
                     this.buttonMulai.visible = false;
                     this.gamePlayed = true;
-
                     this.timeText.visible = true;
-                    //this.scoreText.visible = true;
                     this.highscoreText.visible = true;
                     this.ground.visible = true;
                     this.movingBook.visible = true;
@@ -114,8 +87,6 @@ export default class playGame extends Phaser.Scene {
         this.canDrop = true;
         this.timer = 0;
 
-        //this.maxHeightTest = 0;
-
         this.addPoint = 0;
         this.timerEvent = null;
 
@@ -124,7 +95,9 @@ export default class playGame extends Phaser.Scene {
         this.score = 0;
         this.lastSoundPlayed = 0;
         this.savedData = localStorage.getItem(gameOptions.localStorageName) == null ? { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
-        this.hitSound = [this.sound.add("hit01"), this.sound.add("hit02"), this.sound.add("hit03")];
+        
+        //this.hitSound = [this.sound.add("hit01"), this.sound.add("hit02"), this.sound.add("hit03")];
+        
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
         this.timeText.visible = false;
 
@@ -132,15 +105,16 @@ export default class playGame extends Phaser.Scene {
         this.matter.world.on("collisionstart", this.checkCollision, this);
         this.setCameras();
         this.input.on("pointerdown", this.dropBook, this);
-        this.removeBookSound = this.sound.add("remove", {
-            mute: false,
-            volume: 1,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: true,
-            delay: 0
-        });
+        
+        // this.removeBookSound = this.sound.add("remove", {
+        //     mute: false,
+        //     volume: 1,
+        //     rate: 1,
+        //     detune: 0,
+        //     seek: 0,
+        //     loop: true,
+        //     delay: 0
+        // });
         // this.backgroundMusic = this.sound.add("backsound", {
         //     mute: false,
         //     volume: 0.7,
@@ -170,8 +144,6 @@ export default class playGame extends Phaser.Scene {
         //menambahkan background sky dengan posisi default = (0,0) dan,
         //titik acuan posisinya di tengah gambar
         this.sky = this.add.image(0, 0, "sky");
-        //this.sky.visible = false;
-
         //mengubah ukuran sky agar mengcover layar full screen
         this.sky.setDisplaySize(gameOptions.gameWidth, gameOptions.gameHeight);
         //mengubah posisi sky menjadi tengah-tengah screen
@@ -227,11 +199,11 @@ export default class playGame extends Phaser.Scene {
         //Phaser.Math.RND.pick(this.hitSound).play();
         //var delay = new Date().getMilliseconds() - this.lastSoundPlayed;
         //agar suara tidak terlalu cepat saat dimainkan
-        var delay = Date.now() - this.lastSoundPlayed;
-        if (delay > 200 && this.timer <= gameOptions.timeLimit) {
-            this.lastSoundPlayed = Date.now();
-            Phaser.Math.RND.pick(this.hitSound).play();
-        }
+        // var delay = Date.now() - this.lastSoundPlayed;
+        // if (delay > 200 && this.timer <= gameOptions.timeLimit) {
+        //     this.lastSoundPlayed = Date.now();
+        //     Phaser.Math.RND.pick(this.hitSound).play();
+        // }
     }
 
     setCameras() {
@@ -453,7 +425,7 @@ export default class playGame extends Phaser.Scene {
             this.scoreText.text = "Skor: " + this.score.toString();
             this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
             this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
-            this.removeBookSound.play();
+            //this.removeBookSound.play();
 
             let num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
             num.setOrigin(0.5, 0.5);
@@ -477,7 +449,7 @@ export default class playGame extends Phaser.Scene {
             }, this); */
         }
         else {
-            this.removeBookSound.stop();
+            //this.removeBookSound.stop();
             // this.backgroundMusic.stop();
             this.removeEvent.remove();
 

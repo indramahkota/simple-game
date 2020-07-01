@@ -45,6 +45,10 @@ window.onload = function () {
                 }
             }
         },
+        audio: {
+            noAudio: true,
+            disableWebAudio: true
+        },
         scene: playGame
     }
 
