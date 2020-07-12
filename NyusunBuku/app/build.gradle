@@ -32,6 +32,29 @@ android {
         jvmTarget = "1.8"
     }
 
+    signingConfigs {
+        release {
+            storeFile file(rootProject['app.storeFile'])
+            storePassword rootProject['app.storePassword']
+            keyAlias rootProject['app.keyAlias']
+            keyPassword rootProject['app.keyPassword']
+        }
+    }
+
+    flavorDimensions "version"
+    productFlavors {
+        qa {
+            dimension "version"
+            applicationId "com.indramahkota.game.nyusunbuku.qa"
+        }
+
+        prod {
+            dimension "version"
+            applicationId "com.indramahkota.game.nyusunbuku.prod"
+            signingConfig signingConfigs.release
+        }
+    }
+
 }
 
 dependencies {
