@@ -9,23 +9,20 @@ import smallFontImg from "../assets/fonts/smallfont.png";
 
 //Image Assets
 import ground from "../assets/sprites/ground.png";
-import sky from "../assets/sprites/sky.png";
 import book from "../assets/sprites/book.png";
 import bookFrame from "../assets/sprites/book-frame.png";
-import mulaiButton from "../assets/sprites/mulai-button.png";
 
 export default class PlayGame extends Phaser.Scene {
     constructor() {
-        super("PlayGame");
+        //initialize: Phaser.Scene.call(this, { key: 'PlayGame', active: false, dll... });
+        super({ key: 'PlayGame', active: false });
     }
 
     preload() {
         //load image assets
         this.load.image("ground", ground);
-        this.load.image("sky", sky);
         this.load.image("book", book);
         this.load.image("book_frame", bookFrame);
-        this.load.image("mulai_button", mulaiButton);
 
         //load font assets
         this.load.bitmapFont("font", normalFontImg, normalFont);
@@ -39,124 +36,37 @@ export default class PlayGame extends Phaser.Scene {
         this.BOOKWIDTH = this.textures.get("book").getSourceImage().width;
         this.BOOKHEIGHT = this.textures.get("book").getSourceImage().height;
 
-        this.addSky();
-        this.initMainMenu();
-        this.initPlayGame();
-    }
+        this.savedData = localStorage.getItem(gameOptions.localStorageName) === null ? { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
 
-    initMainMenu() {
-        this.gamePlayed = false;
-        this.buttonMulai = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, "mulai_button");
-
-        this.buttonMulai.setInteractive()
-            .on(Phaser.Input.Events.POINTER_DOWN, () => {
-                this.buttonMulai.scaleX = 0.9;
-                this.buttonMulai.scaleY = 0.9;
-                //console.log() tidak berfungsi ketika object visible=false
-            })
-            .on(Phaser.Input.Events.POINTER_UP, () => {
-                this.buttonMulai.scaleX = 1;
-                this.buttonMulai.scaleY = 1;
-
-                setTimeout(() => {
-                    this.buttonMulai.visible = false;
-                    this.gamePlayed = true;
-                    this.timeText.visible = true;
-                    this.highscoreText.visible = true;
-                    this.ground.visible = true;
-                    this.movingBook.visible = true;
-                }, 250);
-            })
-            .on(Phaser.Input.Events.POINTER_OUT, () => {
-                this.buttonMulai.scaleX = 1;
-                this.buttonMulai.scaleY = 1;
-            });
-    }
-
-    initPlayGame() {
         //Fixed Update time step is 30hz (0.033s), physics operations occur once every 0.033 seconds.
         /* By default, physics operations occur once every 0.02 seconds, or 50hz.
             Each FixedUpdate call is bound to the physics engine,
             and a change of the physics timescale will result in a change of the speed of the FixedUpdate. */
         this.matter.world.update30Hz();
-        this.canDrop = true;
-        this.timer = 0;
-
-        //this.addPoint = 0;
-        this.timerEvent = null;
-        this.playOnce = false;
-
-        this.addGround();
-        this.addMovingBook();
-        this.score = 0;
-        this.lastSoundPlayed = 0;
-        this.savedData = localStorage.getItem(gameOptions.localStorageName) == null ? { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
+        this.matter.world.on("collisionstart", this.checkCollision, this);
         
-        //this.hitSound = [this.sound.add("hit01"), this.sound.add("hit02"), this.sound.add("hit03")];
+        this.timer = 0;
+        this.score = 0;
+
+        //membuat definisi 3 suara hit yang akan di random
+        this.lastSoundPlayed = 0;
         this.hitSound = [
             utilities.playHit1,
             utilities.playHit2,
             utilities.playHit3,
         ];
-        
-        this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
-        this.timeText.visible = false;
 
-        this.bookGroup = this.add.group();
-        this.matter.world.on("collisionstart", this.checkCollision, this);
-        this.setCameras();
-        this.input.on("pointerdown", this.dropBook, this);
+        //membuat definisi timer yang trigger setiap 1 detik
+        //timerEvent ini akan memanggil fungsi tick yang akan mengupdate jalannya aplikasi
+        this.timerEvent = null;
+        this.playOnce = true; //membatasi play remove sound satu kali saja
+        this.canDrop = true; //membatasi fungsi jatuhkan buku, berkaitan dengan movingBook yanga hiden/display
 
-        // this.removeBookSound = this.sound.add("remove", {
-        //     mute: false,
-        //     volume: 1,
-        //     rate: 1,
-        //     detune: 0,
-        //     seek: 0,
-        //     loop: true,
-        //     delay: 0
-        // });
-        // this.backgroundMusic = this.sound.add("backsound", {
-        //     mute: false,
-        //     volume: 0.7,
-        //     rate: 1,
-        //     detune: 0,
-        //     seek: 0,
-        //     loop: true,
-        //     delay: 0
-        // });
-        // this.backgroundMusic.play();
+        //menambahkan camera
+        this.actionCamera = this.cameras.add(0, 0, this.sys.game.config.width, this.sys.game.config.height);
 
-        this.scoreText = this.add.bitmapText(this.sys.game.config.width / 2, this.sys.game.config.height / 2, "smallfont", "Skor: 0", 32);
-        this.scoreText.visible = false;
-
-        this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
-        this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
-        this.actionCamera.ignore(this.scoreText);
-
-        this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
-        this.highscoreText.visible = false;
-
-        this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
-        this.actionCamera.ignore(this.highscoreText);
-    }
-
-    addSky() {
-        //menambahkan background sky dengan posisi default = (0,0) dan,
-        //titik acuan posisinya di tengah gambar
-        this.sky = this.add.image(0, 0, "sky");
-        //mengubah ukuran sky agar mengcover layar full screen
-        this.sky.setDisplaySize(gameOptions.gameWidth, gameOptions.gameHeight);
-        //mengubah posisi sky menjadi tengah-tengah screen
-        //opsi: this.sky.setPosition(this.cameras.main. {centerX ,| centerY})
-        //opsi: this.sky.setPosition(gameOptions.gameWidth / 2, gameOptions.gameHeight / 2);
-        this.sky.setOrigin(0, 0);
-    }
-
-    addGround() {
+        //menambahkan ground
         this.ground = this.matter.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height, "ground");
-        this.ground.visible = false;
-
         this.ground.setBody({
             type: "rectangle",
             width: this.ground.displayWidth,
@@ -166,15 +76,13 @@ export default class PlayGame extends Phaser.Scene {
         this.ground.setOrigin(0.5, 1);
         //setStatic -> gambar ini tidak terpengaruh oleh gravitasi
         this.ground.setStatic(true);
-    }
+        this.cameras.main.ignore(this.ground);
 
-    addMovingBook() {
+        //menambahkan movingBook
         //menempatkan buku di sebelah kanan dan menganimasikannya
         //menuju kearah kiri sampai ke posisi BOOKWIDTH
         this.movingBook = this.add.sprite(this.sys.game.config.width - this.BOOKWIDTH, 1.5 * this.BOOKHEIGHT, "book");
-        this.movingBook.visible = false;
-
-        //this.movingBook = this.add.sprite(this.sys.game.config.width / 2, this.BOOKWIDTH, "book");
+        //tween untuk menggerakkan buku
         this.tweens.add({
             targets: this.movingBook,
             x: this.BOOKWIDTH,
@@ -182,9 +90,43 @@ export default class PlayGame extends Phaser.Scene {
             yoyo: true,
             repeat: -1
         });
+        this.cameras.main.ignore(this.movingBook);
+        
+        this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
+        this.actionCamera.ignore([this.timeText]);
+        this.bookGroup = this.add.group();
+
+        this.scoreText = this.add.bitmapText(this.sys.game.config.width / 2, this.sys.game.config.height / 2, "smallfont", "Skor: 0", 32);
+        this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
+        this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
+        this.actionCamera.ignore(this.scoreText);
+        this.scoreText.visible = false;
+
+        this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
+        this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
+        this.actionCamera.ignore(this.highscoreText);
+
+        this.input.on("pointerdown", this.dropBook, this);
     }
 
-    checkCollision(e, b1, b2) {
+    update() {
+        this.bookGroup.getChildren().forEach(function (book) {
+            if (book.y > this.sys.game.config.height + book.displayHeight) {
+                //ketika objek hit bernilai salah (tidak bertumbukkan)
+                //maka kita bisa menjatuhkan buku kembali
+                if (!book.body.hit) {
+                    this.nextBook();
+                }
+                //dan jika memenuhi persyaratan y-nya lebih besar dari tinggi screen
+                //kita akan menghapus objek buku nya
+                book.destroy();
+                //this.addPoint = 0;
+            }
+        }, this);
+    }
+
+    //using _ for unused parameter
+    checkCollision(_, b1, b2) {
         //jika collision dimulai akan me-return 2 objek body1 dan body2
         //body1 dan body2 kita nyatakan sudah ber collision
         if (b1.isBook && !b1.hit) {
@@ -205,121 +147,6 @@ export default class PlayGame extends Phaser.Scene {
             this.lastSoundPlayed = Date.now();
             Phaser.Math.RND.pick(this.hitSound)();
         }
-    }
-
-    setCameras() {
-        this.actionCamera = this.cameras.add(0, 0, this.sys.game.config.width, this.sys.game.config.height);
-        //meng-ignore objek sky
-        //this.actionCamera.ignore([this.sky]);
-        this.actionCamera.ignore([this.sky, this.timeText]);
-        this.cameras.main.ignore([this.ground, this.movingBook]);
-    }
-
-    dropBook() {
-        if (!this.gamePlayed) return;
-
-        //fungsi yang di invoke saat pointerdown dan akan menjatuhkan buku ketika canDrop=true
-        this.input.stopPropagation();
-        if (this.canDrop && this.timer < gameOptions.timeLimit) {
-            this.addTimer();
-            //this.addPoint += 1;
-
-            /* if (this.addPoint === 5) {
-                this.timer -= 2;
-                this.showToast("Mendapatkan tambahan waktu 2 detik.");
-            } else if (this.addPoint === 7) {
-                this.timer -= 5;
-                this.showToast("Mendapatkan tambahan waktu 5 detik.");
-            } else if (this.addPoint === 9) {
-                this.timer -= 8;
-                this.showToast("Mendapatkan tambahan waktu 8 detik.");
-            } else if (this.addPoint === 11) {
-                this.timer -= 11;
-                this.showToast("Mendapatkan tambahan waktu 11 detik.");
-            } else if (this.addPoint === 13) {
-                this.timer -= 14;
-                this.showToast("Mendapatkan tambahan waktu 14 detik.");
-            } else if (this.addPoint === 15) {
-                this.timer -= 17;
-                this.showToast("Mendapatkan tambahan waktu 17 detik.");
-            } else if (this.addPoint === 17) {
-                this.timer -= 20;
-                this.showToast("Mendapatkan tambahan waktu 20 detik.");
-            } else if (this.addPoint > 19) {
-                this.timer -= 23;
-                this.showToast("Mendapatkan tambahan waktu 23 detik.");
-            } */
-
-            this.canDrop = false;
-            this.movingBook.visible = false;
-            this.addFallingBook();
-        }
-    }
-
-    /* showToast(text) {
-        let bg = this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e);
-        let tex = this.add.text(0, 0, '', {
-            fontSize: '24px'
-        });
-
-        this.actionCamera.ignore(bg);
-        this.actionCamera.ignore(tex);
-
-        this.toast = this.rexUI.add.toast({
-            x: this.cameras.main.centerX,
-            y: this.cameras.main.centerY,
-            background: bg,
-            text: tex,
-            space: {
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: 20,
-            },
-        }).show(text)
-    } */
-
-    update() {
-        if (!this.gamePlayed) return;
-
-        this.bookGroup.getChildren().forEach(function (book) {
-            if (book.y > this.sys.game.config.height + book.displayHeight) {
-                //ketika objek hit bernilai salah (tidak bertumbukkan)
-                //maka kita bisa menjatuhkan buku kembali
-                if (!book.body.hit) {
-                    this.nextBook();
-                }
-                //dan jika memenuhi persyaratan y-nya lebih besar dari tinggi screen
-                //kita akan menghapus objek buku nya
-                book.destroy();
-                //this.addPoint = 0;
-            }
-        }, this);
-    }
-
-    addTimer() {
-        //addTimer hanya dijalankan 1 kali saja
-        //saat buku pertama dijatuhkan
-        //dengan waktu delay 1 detik
-        //setelah 1 detik akan memanggil caallback tick()
-        if (this.timerEvent == null) {
-            this.timerEvent = this.time.addEvent({
-                delay: 1000,
-                callback: this.tick,
-                callbackScope: this,
-                loop: true
-            });
-        }
-    }
-
-    addFallingBook() {
-        let fallingBook = this.matter.add.sprite(this.movingBook.x, this.movingBook.y, "book");
-        fallingBook.setMass(2);
-        fallingBook.setFrictionStatic(10);
-        fallingBook.body.isBook = true;
-        fallingBook.body.hit = false;
-        this.bookGroup.add(fallingBook);
-        this.cameras.main.ignore(fallingBook);
     }
 
     nextBook() {
@@ -343,11 +170,47 @@ export default class PlayGame extends Phaser.Scene {
         }, this);
 
         this.movingBook.y = this.ground.getBounds().top - maxHeight * this.movingBook.displayHeight - gameOptions.bookHeight;
-        let zoomFactor = gameOptions.bookHeight / (this.ground.getBounds().top - this.movingBook.y);
+        const zoomFactor = gameOptions.bookHeight / (this.ground.getBounds().top - this.movingBook.y);
 
         this.actionCamera.zoomTo(zoomFactor, 500);
-        let newHeight = this.sys.game.config.height / zoomFactor;
+        const newHeight = this.sys.game.config.height / zoomFactor;
         this.actionCamera.pan(this.sys.game.config.width / 2, this.sys.game.config.height / 2 - (newHeight - this.sys.game.config.height) / 2, 500);
+    }
+
+    dropBook() {
+        //fungsi yang di invoke saat pointerdown dan akan menjatuhkan buku ketika canDrop=true
+        this.input.stopPropagation();
+        if (this.canDrop && this.timer < gameOptions.timeLimit) {
+            this.addTimerEvent();
+            this.canDrop = false;
+            this.movingBook.visible = false;
+            this.addFallingBook();
+        }
+    }
+
+    addTimerEvent() {
+        //addTimerEvent hanya dijalankan 1 kali saja
+        //saat buku pertama dijatuhkan
+        //dengan waktu delay 1 detik
+        //setelah 1 detik akan memanggil caallback tick()
+        if (this.timerEvent == null) {
+            this.timerEvent = this.time.addEvent({
+                delay: 1000,
+                callback: this.tick,
+                callbackScope: this,
+                loop: true
+            });
+        }
+    }
+
+    addFallingBook() {
+        const fallingBook = this.matter.add.sprite(this.movingBook.x, this.movingBook.y, "book");
+        fallingBook.setMass(2);
+        fallingBook.setFrictionStatic(10);
+        fallingBook.body.isBook = true;
+        fallingBook.body.hit = false;
+        this.bookGroup.add(fallingBook);
+        this.cameras.main.ignore(fallingBook);
     }
 
     tick() {
@@ -419,7 +282,7 @@ export default class PlayGame extends Phaser.Scene {
         if (this.bookGroup.getChildren().length > 0) {
             //this.bookGroup.getFirstAlive().destroy();
             //this.bookGroup.getChildren()[this.bookGroup.getChildren().length - 1].destroy();
-            let dek = this.bookGroup.getChildren()[0];
+            const dek = this.bookGroup.getChildren()[0];
 
             this.score += dek.sign;
             this.scoreText.text = "Skor: " + this.score.toString();
@@ -432,11 +295,11 @@ export default class PlayGame extends Phaser.Scene {
                 utilities.playRemove();
             }
 
-            let num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
+            const num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
             num.setOrigin(0.5, 0.5);
             this.cameras.main.ignore(num);
 
-            let frame = this.matter.add.sprite(dek.x, dek.y, "book_frame");
+            const frame = this.matter.add.sprite(dek.x, dek.y, "book_frame");
             frame.rotation = dek.rotation;
             this.cameras.main.ignore(frame);
             frame.setStatic(true);
@@ -474,6 +337,7 @@ export default class PlayGame extends Phaser.Scene {
     }
 
     playAgain() {
-        this.scene.start("PlayGame");
+        this.scene.setActive(false, "PlayGame");
+        this.scene.start("Menu");
     }
 }
