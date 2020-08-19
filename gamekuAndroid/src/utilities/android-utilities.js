@@ -1,32 +1,32 @@
 const utilities = {
     showAndroidToast(toast) {
-        if (typeof Android !== "undefined") {
-            Android.showToast(toast);
+        if (typeof AndroidSoundPool !== "undefined") {
+            AndroidSoundPool.showToast(toast);
         }
     },
     playHit1() {
-        if (typeof Android !== "undefined") {
-            Android.playHit1();
+        if (typeof AndroidSoundPool !== "undefined") {
+            AndroidSoundPool.playHit1();
         }
     },
     playHit2() {
-        if (typeof Android !== "undefined") {
-            Android.playHit2();
+        if (typeof AndroidSoundPool !== "undefined") {
+            AndroidSoundPool.playHit2();
         }
     },
     playHit3() {
-        if (typeof Android !== "undefined") {
-            Android.playHit3();
+        if (typeof AndroidSoundPool !== "undefined") {
+            AndroidSoundPool.playHit3();
         }
     },
     playRemove() {
-        if (typeof Android !== "undefined") {
-            Android.playRemoveSound();
+        if (typeof AndroidSoundPool !== "undefined") {
+            AndroidSoundPool.playRemoveSound();
         }
     },
     removeRemove() {
-        if (typeof Android !== "undefined") {
-            Android.removeRemoveSound();
+        if (typeof AndroidSoundPool !== "undefined") {
+            AndroidSoundPool.removeRemoveSound();
         }
     }
 };
