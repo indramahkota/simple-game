@@ -30,6 +30,16 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        allWarningsAsErrors = true
+    }
+
+    buildFeatures {
+        compose false
+    }
+
+    composeOptions {
+        kotlinCompilerVersion "1.4.0-release-Studio4.1-1"
+        kotlinCompilerExtensionVersion compose_version
     }
 
     signingConfigs {
@@ -43,11 +53,6 @@ android {
 
     flavorDimensions "version"
     productFlavors {
-        qa {
-            dimension "version"
-            applicationId "com.indramahkota.game.nyusunbuku.qa"
-        }
-
         prod {
             dimension "version"
             applicationId "com.indramahkota.game.nyusunbuku.prod"
@@ -60,6 +65,17 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+    implementation "androidx.compose.runtime:runtime:$compose_version"
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.foundation:foundation-layout:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.compose.foundation:foundation:$compose_version"
+    implementation "androidx.compose.animation:animation:$compose_version"
+    implementation "androidx.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+
+    implementation 'androidx.webkit:webkit:1.3.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.core:core-ktx:1.3.1'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

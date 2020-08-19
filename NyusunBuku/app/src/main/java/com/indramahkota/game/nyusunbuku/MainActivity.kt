@@ -6,11 +6,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.webkit.WebViewAssetLoader
+import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
+import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
 import com.indramahkota.game.nyusunbuku.interfaces.SoundPoolInterface
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -22,15 +27,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        soundPool = SoundPool.Builder()
-            .setMaxStreams(1)
-            .build()
-
         webView.setBackgroundColor(
-            ContextCompat.getColor(
-                applicationContext,
-                R.color.colorPrimary
-            )
+            ContextCompat.getColor(applicationContext, R.color.colorPrimary)
         )
 
         webView.settings.javaScriptEnabled = true
@@ -41,17 +39,30 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.allowContentAccess = true
 
-        webView.webViewClient = object: WebViewClient() {
+        val assetLoader = WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", AssetsPathHandler(this))
+            .addPathHandler("/res/", ResourcesPathHandler(this))
+            .build()
+
+        webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     splashImage.visibility = View.GONE
                 }, 500)
                 super.onPageFinished(view, url)
             }
+
+            override fun shouldInterceptRequest(
+                view: WebView,
+                request: WebResourceRequest
+            ): WebResourceResponse? {
+                return assetLoader.shouldInterceptRequest(request.url)
+            }
         }
 
+        soundPool = SoundPool.Builder().setMaxStreams(1).build()
         webView.addJavascriptInterface(SoundPoolInterface(this, soundPool), "AndroidSoundPool")
-        webView.loadUrl("file:///android_asset/index.html")
+        webView.loadUrl("https://appassets.androidplatform.net/assets/www/index.html")
     }
 
     override fun onPause() {
