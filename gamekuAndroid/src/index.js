@@ -1,59 +1,47 @@
-import "./assets/styles/style.css";
+import "./index.css";
+import gameOptions from "./utilities/game-options.js";
 
 import Phaser from "phaser";
-import gameOptions from "./constants/game-options.js";
-import playGame from "./scenes/play-game.js";
-import RexUIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin.js";
+import PlayGame from "./scenes/game.js";
 
 window.onload = function () {
-    const ratio = window.innerHeight / window.innerWidth;
-    if (ratio >= 1) {
-        if (ratio < 1.5) {
-            gameOptions.gameWidth = gameOptions.gameHeight / ratio;
-        } else {
-            gameOptions.gameHeight = gameOptions.gameWidth * ratio;
-        }
+  const setGameSize = (ratio) => {
+    if (ratio < 1.5) {
+      gameOptions.gameWidth = gameOptions.gameHeight / ratio;
     } else {
-        const lanscapeRatio = 1 / ratio;
-        if (lanscapeRatio < 1.5) {
-            gameOptions.gameWidth = gameOptions.gameHeight / lanscapeRatio;
-        } else {
-            gameOptions.gameHeight = gameOptions.gameWidth * lanscapeRatio;
-        }
+      gameOptions.gameHeight = gameOptions.gameWidth * ratio;
     }
+  };
 
-    let gameConfig = {
-        type: Phaser.WEBGL,
-        scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-            width: gameOptions.gameWidth,
-            height: gameOptions.gameHeight
-        },
-        plugins: {
-            scene: [
-                {
-                    key: "rexUI",
-                    plugin: RexUIPlugin,
-                    mapping: "rexUI",
-                },
-            ]
-        },
-        physics: {
-            default: "matter",
-            matter: {
-                gravity: {
-                    y: gameOptions.gravity
-                }
-            }
-        },
-        audio: {
-            noAudio: true,
-            disableWebAudio: true
-        },
-        scene: playGame
-    };
+  if ((window.innerHeight / window.innerWidth) >= 1) {
+    setGameSize(window.innerHeight / window.innerWidth);
+  } else {
+    setGameSize(window.innerWidth / window.innerHeight);
+  }
 
-    new Phaser.Game(gameConfig);
-    window.focus();
-}
+  let gameConfig = {
+    type: Phaser.WEBGL,
+    scale: {
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: gameOptions.gameWidth,
+      height: gameOptions.gameHeight,
+    },
+    physics: {
+      default: "matter",
+      matter: {
+        gravity: {
+          y: gameOptions.gravity,
+        },
+      },
+    },
+    audio: {
+      noAudio: true,
+      disableWebAudio: true,
+    },
+    scene: PlayGame
+  };
+
+  new Phaser.Game(gameConfig);
+  window.focus();
+};

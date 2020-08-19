@@ -1,7 +1,6 @@
-import gameOptions from "../constants/game-options.js";
+import gameOptions from "../utilities/game-options.js";
 import utilities from "../utilities/android-utilities.js";
 
-/* Load Assets with file-loader */
 //Font Assets
 import normalFont from "../assets/fonts/font.fnt";
 import smallFont from "../assets/fonts/smallfont.fnt";
@@ -13,10 +12,9 @@ import ground from "../assets/sprites/ground.png";
 import sky from "../assets/sprites/sky.png";
 import book from "../assets/sprites/book.png";
 import bookFrame from "../assets/sprites/book-frame.png";
-
 import mulaiButton from "../assets/sprites/mulai-button.png";
 
-export default class playGame extends Phaser.Scene {
+export default class PlayGame extends Phaser.Scene {
     constructor() {
         super("PlayGame");
     }
@@ -35,9 +33,6 @@ export default class playGame extends Phaser.Scene {
     }
 
     create() {
-        //utilities.showAndroidToast("Hello World!");
-        //utilities.showAndroidPopUp();
-
         // mendapatkan definisi texture
         this.GROUNDWIDTH = this.textures.get("ground").getSourceImage().width;
         this.GROUNDHEIGHT = this.textures.get("ground").getSourceImage().height;
@@ -87,7 +82,7 @@ export default class playGame extends Phaser.Scene {
         this.canDrop = true;
         this.timer = 0;
 
-        this.addPoint = 0;
+        //this.addPoint = 0;
         this.timerEvent = null;
         this.playOnce = false;
 
@@ -227,9 +222,9 @@ export default class playGame extends Phaser.Scene {
         this.input.stopPropagation();
         if (this.canDrop && this.timer < gameOptions.timeLimit) {
             this.addTimer();
-            this.addPoint += 1;
+            //this.addPoint += 1;
 
-            if (this.addPoint === 5) {
+            /* if (this.addPoint === 5) {
                 this.timer -= 2;
                 this.showToast("Mendapatkan tambahan waktu 2 detik.");
             } else if (this.addPoint === 7) {
@@ -253,7 +248,7 @@ export default class playGame extends Phaser.Scene {
             } else if (this.addPoint > 19) {
                 this.timer -= 23;
                 this.showToast("Mendapatkan tambahan waktu 23 detik.");
-            }
+            } */
 
             this.canDrop = false;
             this.movingBook.visible = false;
@@ -261,7 +256,7 @@ export default class playGame extends Phaser.Scene {
         }
     }
 
-    showToast(text) {
+    /* showToast(text) {
         let bg = this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e);
         let tex = this.add.text(0, 0, '', {
             fontSize: '24px'
@@ -282,7 +277,7 @@ export default class playGame extends Phaser.Scene {
                 bottom: 20,
             },
         }).show(text)
-    }
+    } */
 
     update() {
         if (!this.gamePlayed) return;
@@ -297,7 +292,7 @@ export default class playGame extends Phaser.Scene {
                 //dan jika memenuhi persyaratan y-nya lebih besar dari tinggi screen
                 //kita akan menghapus objek buku nya
                 book.destroy();
-                this.addPoint = 0;
+                //this.addPoint = 0;
             }
         }, this);
     }
