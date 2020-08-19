@@ -32,12 +32,12 @@ android {
         jvmTarget = "1.8"
     }
 
-    signingConfigs {
+    /*signingConfigs {
         release {
-            storeFile file('C:\\Users\\zwetan\\Documents\\gameku\\certificate.jks')
-            storePassword rootProject['app.storePassword']
-            keyAlias rootProject['app.keyAlias']
-            keyPassword rootProject['app.keyPassword']
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
         }
     }
 
@@ -53,8 +53,7 @@ android {
             applicationId "com.indramahkota.game.nyusunbuku.prod"
             signingConfig signingConfigs.release
         }
-    }
-
+    }*/
 }
 
 dependencies {

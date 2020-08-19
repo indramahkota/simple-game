@@ -5,6 +5,7 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -27,13 +28,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         soundPool = SoundPool.Builder()
-            .setMaxStreams(6)
+            .setMaxStreams(3)
             .build()
 
         hit1 = soundPool?.load(this, R.raw.hit01, 1)
         hit2 = soundPool?.load(this, R.raw.hit02, 1)
         hit3 = soundPool?.load(this, R.raw.hit03, 1)
         removeSound = soundPool?.load(this, R.raw.remove, 1)
+
+        soundPool?.setOnLoadCompleteListener { _, _, _ -> run {
+                Log.d("AKAK", "load true")
+            }
+        }
 
         webView.setBackgroundColor(
             ContextCompat.getColor(
@@ -54,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     splashImage.visibility = View.GONE
+                    Log.d("AKAK", "visib true")
                 }, 500)
                 super.onPageFinished(view, url)
             }
