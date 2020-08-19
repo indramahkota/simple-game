@@ -52,7 +52,7 @@ module.exports = merge(base, {
     new FileManagerPlugin({
       onEnd: {
         copy: [
-          { source: 'dist', destination: '../NyusunBuku/app/src/main/assets/' }
+          { source: 'dist', destination: '../NyusunBuku/app/src/main/assets/www/' }
         ]
       }
     })
