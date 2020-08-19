@@ -2,10 +2,6 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-/* 
-  pada rule test: menggunakan regex untuk mencari file di directori
-*/
-
 module.exports = {
   entry: {
     index: './src/index.js'
@@ -16,15 +12,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        include: /styles/,
         use: ["style-loader", "css-loader"]
-      },
-      {
-        test: /\.js$/i,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
       },
       {
         test: [/\.vert$/i, /\.frag$/i],
@@ -51,7 +39,8 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
-      filename: "index.html"
+      filename: "index.html",
+      minify: { collapseWhitespace: true, removeComments: true }
     })
   ]
 };
