@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     splashImage.visibility = View.GONE
-                }, 500)
+                }, 1500)
                 super.onPageFinished(view, url)
             }
 
