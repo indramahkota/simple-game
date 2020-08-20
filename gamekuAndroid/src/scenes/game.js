@@ -59,7 +59,7 @@ export default class PlayGame extends Phaser.Scene {
         //membuat definisi timer yang trigger setiap 1 detik
         //timerEvent ini akan memanggil fungsi tick yang akan mengupdate jalannya aplikasi
         this.timerEvent = null;
-        this.playOnce = true; //membatasi play remove sound satu kali saja
+        this.playOnce = false; //membatasi play remove sound satu kali saja
         this.canDrop = true; //membatasi fungsi jatuhkan buku, berkaitan dengan movingBook yanga hiden/display
 
         //menambahkan camera
