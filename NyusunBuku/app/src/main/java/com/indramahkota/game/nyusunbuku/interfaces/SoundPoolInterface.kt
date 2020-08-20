@@ -42,6 +42,10 @@ class SoundPoolInterface(
         hit3?.let { soundPool?.play(it, 1.0f, 1.0f, 1, 0, 1.0f) }
     }
 
+    /*
+    * Khusus removeSound dibuat 2 fungsi: mainkan dan berhentikan
+    * fungsi mainkan akan memainkan sound secara loop
+    * */
     @JavascriptInterface
     fun playRemoveSound() {
         removeSound?.let { removeSound = soundPool?.play(it, 1.0f, 1.0f, 1, -1, 1.0f) }
