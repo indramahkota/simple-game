@@ -24,7 +24,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: 'assets/[contenthash].[ext]',
+              name: 'assets/[contenthash:5].[ext]',
             },
           },
         ],
