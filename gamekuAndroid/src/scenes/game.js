@@ -59,15 +59,6 @@ export default class PlayGame extends Phaser.Scene {
         this.playOnce = false; //membatasi play removeSound satu kali saja
         this.canDrop = true; //membatasi fungsi jatuhkan buku, berkaitan dengan movingBook yanga hiden/display
 
-        /* 
-            Ada 2 Camera yang akan aktif yaitu main camera dan actionCamera
-            secara default kedua camera tsb akan berefek pada objek" yang di buat
-            untuk menghilangkan efeknya berikan ignore pada objek
-        */
-        //menambahkan camera, posisi (0, 0) berada di tengah/pusat objek "persegi panjang"
-        //width dan height mengikuti perhitungan game config
-        this.actionCamera = this.cameras.add(0, 0, gameOptions.gameWidth, gameOptions.gameHeight);
-
         //menambahkan ground
         this.ground = this.matter.add.sprite(gameOptions.gameWidth / 2, gameOptions.gameHeight, "ground");
         this.ground.setBody({
@@ -79,7 +70,6 @@ export default class PlayGame extends Phaser.Scene {
         this.ground.setOrigin(0.5, 1);
         //setStatic -> gambar ini tidak terpengaruh oleh gravitasi
         this.ground.setStatic(true);
-        this.cameras.main.ignore(this.ground);
 
         //menambahkan movingBook padding top movingBook = gameOptions.bookHeight
         //menempatkan buku di sebelah kanan dan menganimasikannya
@@ -93,22 +83,29 @@ export default class PlayGame extends Phaser.Scene {
             yoyo: true,
             repeat: -1
         });
-        this.cameras.main.ignore(this.movingBook);
+
+        this.bookGroup = this.add.group();
         
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
-        this.actionCamera.ignore(this.timeText);
 
         this.highscoreText = this.add.bitmapText(gameOptions.gameWidth, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
-        this.actionCamera.ignore(this.highscoreText);
 
         this.scoreText = this.add.bitmapText(gameOptions.gameWidth / 2, gameOptions.gameHeight / 2, "smallfont", "Skor: 0", 32);
         this.scoreText.x = (gameOptions.gameWidth - this.scoreText.width) / 2;
         this.scoreText.y = (gameOptions.gameHeight - this.scoreText.height) / 2;
-        this.actionCamera.ignore(this.scoreText);
         this.scoreText.visible = false;
 
-        this.bookGroup = this.add.group();
+        /* 
+            Ada 2 Camera yang akan aktif yaitu main camera dan actionCamera
+            secara default kedua camera tsb akan berefek pada objek" yang di buat
+            untuk menghilangkan efeknya berikan ignore pada objek
+        */
+        //menambahkan camera, posisi (0, 0) berada di tengah/pusat objek "persegi panjang"
+        //width dan height mengikuti perhitungan game config
+        this.actionCamera = this.cameras.add(0, 0, gameOptions.gameWidth, gameOptions.gameHeight);
+        this.actionCamera.ignore([this.timeText, this.highscoreText, this.scoreText]);
+        this.cameras.main.ignore([this.ground, this.movingBook]);
 
         this.input.on("pointerdown", this.dropBook, this);
     }
@@ -297,9 +294,9 @@ export default class PlayGame extends Phaser.Scene {
         if (this.bookGroup.getChildren().length > 0) {
             //this.bookGroup.getFirstAlive().destroy();
             //this.bookGroup.getChildren()[this.bookGroup.getChildren().length - 1].destroy();
-            const dek = this.bookGroup.getChildren()[0];
+            const book = this.bookGroup.getChildren()[0];
 
-            this.score += dek.sign;
+            this.score += book.sign;
             this.scoreText.text = "Skor: " + this.score.toString();
             this.scoreText.x = (gameOptions.gameWidth - this.scoreText.width) / 2;
             this.scoreText.y = (gameOptions.gameHeight - this.scoreText.height) / 2;
@@ -310,16 +307,16 @@ export default class PlayGame extends Phaser.Scene {
                 utilities.playRemove();
             }
 
-            const num = this.add.bitmapText(dek.x, dek.y, "smallfont", dek.sign.toString(), 32);
+            const num = this.add.bitmapText(book.x, book.y, "smallfont", book.sign.toString(), 32);
             num.setOrigin(0.5, 0.5);
             this.cameras.main.ignore(num);
 
-            const frame = this.matter.add.sprite(dek.x, dek.y, "book_frame");
-            frame.rotation = dek.rotation;
+            const frame = this.matter.add.sprite(book.x, book.y, "book_frame");
+            frame.rotation = book.rotation;
             this.cameras.main.ignore(frame);
             frame.setStatic(true);
 
-            dek.destroy();
+            book.destroy();
 
             //this.bookGroup.getChildren()[0].destroy();
             /* let signCount = 0;
