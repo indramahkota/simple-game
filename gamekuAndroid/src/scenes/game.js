@@ -10,6 +10,7 @@ import smallFontImg from "../assets/fonts/smallfont.png";
 //mendapatkan path file image pada folder assets
 import ground from "../assets/sprites/ground.png";
 import book from "../assets/sprites/book.png";
+import shadow from "../assets/sprites/shadow.png";
 import bookFrame from "../assets/sprites/book-frame.png";
 
 export default class PlayGame extends Phaser.Scene {
@@ -23,6 +24,7 @@ export default class PlayGame extends Phaser.Scene {
         //load image pada folder assets
         this.load.image("ground", ground);
         this.load.image("book", book);
+        this.load.image("shadow", shadow);
         this.load.image("book_frame", bookFrame);
 
         //load font pada folder assets
@@ -61,6 +63,7 @@ export default class PlayGame extends Phaser.Scene {
 
         //menambahkan ground
         this.ground = this.matter.add.sprite(gameOptions.gameWidth / 2, gameOptions.gameHeight, "ground");
+        //menambahkan physic matter js
         this.ground.setBody({
             type: "rectangle",
             width: this.ground.displayWidth,
@@ -71,13 +74,17 @@ export default class PlayGame extends Phaser.Scene {
         //setStatic -> gambar ini tidak terpengaruh oleh gravitasi
         this.ground.setStatic(true);
 
+        this.shadow = this.add.sprite(gameOptions.gameWidth - gameOptions.bookWidth, this.ground.getBounds().top - gameOptions.distanceFromGround, "shadow");
+        this.shadow.setOrigin(0.5, 0);
+        this.shadow.setDisplaySize(this.shadow.displayWidth, 2 * this.shadow.displayHeight);
+
         //menambahkan movingBook padding top movingBook = gameOptions.bookHeight
         //menempatkan buku di sebelah kanan dan menganimasikannya
         //padding animasi left right = 1/2 * gameOptions.bookWidth
-        this.movingBook = this.add.sprite(gameOptions.gameWidth - gameOptions.bookWidth, 1.5 * gameOptions.bookHeight, "book");
+        this.movingBook = this.add.sprite(gameOptions.gameWidth - gameOptions.bookWidth, this.ground.getBounds().top - gameOptions.distanceFromGround, "book");
         //tween untuk menggerakkan buku
         this.tweens.add({
-            targets: this.movingBook,
+            targets: [this.shadow, this.movingBook],
             x: gameOptions.bookWidth,
             duration: gameOptions.bookSpeed,
             yoyo: true,
@@ -88,8 +95,9 @@ export default class PlayGame extends Phaser.Scene {
         
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
 
-        this.highscoreText = this.add.bitmapText(gameOptions.gameWidth, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
+        this.highscoreText = this.add.bitmapText(gameOptions.gameWidth, 0, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
         this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
+        this.highscoreText.y = this.highscoreText.y + this.highscoreText.height / 2;
 
         this.scoreText = this.add.bitmapText(gameOptions.gameWidth / 2, gameOptions.gameHeight / 2, "smallfont", "Skor: 0", 32);
         this.scoreText.x = (gameOptions.gameWidth - this.scoreText.width) / 2;
@@ -105,13 +113,17 @@ export default class PlayGame extends Phaser.Scene {
         //width dan height mengikuti perhitungan game config
         this.actionCamera = this.cameras.add(0, 0, gameOptions.gameWidth, gameOptions.gameHeight);
         this.actionCamera.ignore([this.timeText, this.highscoreText, this.scoreText]);
-        this.cameras.main.ignore([this.ground, this.movingBook]);
+        this.cameras.main.ignore([this.ground, this.shadow, this.movingBook]);
 
         this.input.on("pointerdown", this.dropBook, this);
     }
 
     update() {
         this.bookGroup.getChildren().forEach(book => {
+            const stack = Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight) - 1;
+            book.body.mass = Math.abs((stack - 20) * 100);
+            book.body.frictionStatic = Math.abs((stack - 20) * 100);
+
             if (book.y > gameOptions.gameHeight + book.displayHeight) {
                 //ketika objek hit bernilai salah (tidak bertumbukkan)
                 //maka kita bisa menjatuhkan buku kembali
@@ -153,6 +165,7 @@ export default class PlayGame extends Phaser.Scene {
     nextBook() {
         this.zoomCamera();
         this.canDrop = true;
+        this.shadow.visible = true;
         this.movingBook.visible = true;
     }
 
@@ -164,15 +177,17 @@ export default class PlayGame extends Phaser.Scene {
             //jika buku tersebut sudah bertumbukkan
             if (book.body.hit) {
                 //rumus menghitung total tumpukkan bukunya berdasarkan tinggi buku
-                maxHeight = Math.max(maxHeight,
-                    Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight)
-                );
+                const stack = Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight);
+                //console.log(`stack: ${stack} mass: ${book.body.mass}`);
+                //console.log(`stack: ${stack} frictionStatic: ${book.body.frictionStatic}`);
+                maxHeight = Math.max(maxHeight, stack);
             }
         }, this);
 
         this.movingBook.y = this.ground.getBounds().top - (maxHeight * gameOptions.bookHeight) - gameOptions.distanceFromGround;
+        this.shadow.y = this.movingBook.y;
 
-        const zoomFactor = gameOptions.distanceFromGround / (this.ground.getBounds().top - this.movingBook.getBounds().top);
+        const zoomFactor = gameOptions.distanceFromGround / (this.ground.getBounds().top - this.movingBook.y);
 
         //zoom in/out tergantung zoomFactor kamera dengan durasi 500ms
         //zoom akan berfocus pada titik pusat actionCamera/titik (0, 0)
@@ -195,6 +210,7 @@ export default class PlayGame extends Phaser.Scene {
         if (this.canDrop && this.timer < gameOptions.timeLimit) {
             this.addTimerEvent();
             this.canDrop = false;
+            this.shadow.visible = false;
             this.movingBook.visible = false;
             this.addFallingBook();
         }
@@ -217,8 +233,8 @@ export default class PlayGame extends Phaser.Scene {
 
     addFallingBook() {
         const fallingBook = this.matter.add.sprite(this.movingBook.x, this.movingBook.y, "book");
-        fallingBook.setMass(2);
-        fallingBook.setFrictionStatic(10);
+        fallingBook.setBounce(0);
+        fallingBook.setDensity(100);
         fallingBook.body.isBook = true;
         fallingBook.body.hit = false;
         this.bookGroup.add(fallingBook);
@@ -239,6 +255,7 @@ export default class PlayGame extends Phaser.Scene {
         if (this.timer >= gameOptions.timeLimit) {
             //menghapus timer event dari phaser
             this.timerEvent.remove();
+            this.shadow.destroy();
             //menghapus movingBook
             this.movingBook.destroy();
 
