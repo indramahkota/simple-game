@@ -2,7 +2,8 @@ import mulaiButton from "../assets/sprites/mulai-button.png";
 
 export default class Menu extends Phaser.Scene {
     constructor() {
-        //initialize: Phaser.Scene.call(this, { key: 'Menu', active: true, dll... });
+        //initialize scene
+        //Phaser.Scene.call(this, { key: 'Menu', active: true, dll... });
         super({ key: 'Menu', active: true });
     }
 

@@ -1,12 +1,12 @@
 const gameOptions = {
-    timeLimit: 30,
     gravity: 1,
-    bookHeight: 700,
+    timeLimit: 30,
     bookSpeed: 800,
+    distanceFromGround: 700,
     gameWidth: 640,
     gameHeight: 960,
-    resetPositionX: 0,
-    resetPositionY: 0,
+    bookWidth: 70,
+    bookHeight: 99,
     localStorageName: "gamenyusunbuku"
 }
 

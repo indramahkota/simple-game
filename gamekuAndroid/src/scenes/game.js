@@ -1,54 +1,51 @@
 import gameOptions from "../utilities/game-options.js";
 import utilities from "../utilities/android-utilities.js";
 
-//Font Assets
+//mendapatkan path file font pada folder assets
 import normalFont from "../assets/fonts/font.fnt";
 import smallFont from "../assets/fonts/smallfont.fnt";
 import normalFontImg from "../assets/fonts/font.png";
 import smallFontImg from "../assets/fonts/smallfont.png";
 
-//Image Assets
+//mendapatkan path file image pada folder assets
 import ground from "../assets/sprites/ground.png";
 import book from "../assets/sprites/book.png";
 import bookFrame from "../assets/sprites/book-frame.png";
 
 export default class PlayGame extends Phaser.Scene {
     constructor() {
-        //initialize: Phaser.Scene.call(this, { key: 'PlayGame', active: false, dll... });
+        //initialize scene
+        //Phaser.Scene.call(this, { key: 'PlayGame', active: false, dll... });
         super({ key: 'PlayGame', active: false });
     }
 
     preload() {
-        //load image assets
+        //load image pada folder assets
         this.load.image("ground", ground);
         this.load.image("book", book);
         this.load.image("book_frame", bookFrame);
 
-        //load font assets
+        //load font pada folder assets
         this.load.bitmapFont("font", normalFontImg, normalFont);
         this.load.bitmapFont("smallfont", smallFontImg, smallFont);
     }
 
     create() {
-        // mendapatkan definisi texture
-        this.GROUNDWIDTH = this.textures.get("ground").getSourceImage().width;
-        this.GROUNDHEIGHT = this.textures.get("ground").getSourceImage().height;
-        this.BOOKWIDTH = this.textures.get("book").getSourceImage().width;
-        this.BOOKHEIGHT = this.textures.get("book").getSourceImage().height;
+        //mengambil data nilai tertinggi pada local storage
+        this.savedData = localStorage.getItem(gameOptions.localStorageName) === null ?
+            { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
 
-        this.savedData = localStorage.getItem(gameOptions.localStorageName) === null ? { score: 0 } : JSON.parse(localStorage.getItem(gameOptions.localStorageName));
-
-        //Fixed Update time step is 30hz (0.033s), physics operations occur once every 0.033 seconds.
         /* By default, physics operations occur once every 0.02 seconds, or 50hz.
             Each FixedUpdate call is bound to the physics engine,
             and a change of the physics timescale will result in a change of the speed of the FixedUpdate. */
-        this.matter.world.update30Hz();
+        this.matter.world.update30Hz();//Fixed Update time step is 30hz (0.033s), physics operations occur once every 0.033 seconds.
         this.matter.world.on("collisionstart", this.checkCollision, this);
         
         this.timer = 0;
         this.score = 0;
 
         //membuat definisi 3 suara hit yang akan di random
+        //lastSoundPlayed membatasi pembunyian suara dalam waktu tertentu
         this.lastSoundPlayed = 0;
         this.hitSound = [
             utilities.playHit1,
@@ -57,16 +54,22 @@ export default class PlayGame extends Phaser.Scene {
         ];
 
         //membuat definisi timer yang trigger setiap 1 detik
-        //timerEvent ini akan memanggil fungsi tick yang akan mengupdate jalannya aplikasi
+        //timerEvent ini akan memanggil fungsi tick yang akan mengupdate beberapa object
         this.timerEvent = null;
-        this.playOnce = false; //membatasi play remove sound satu kali saja
+        this.playOnce = false; //membatasi play removeSound satu kali saja
         this.canDrop = true; //membatasi fungsi jatuhkan buku, berkaitan dengan movingBook yanga hiden/display
 
-        //menambahkan camera
-        this.actionCamera = this.cameras.add(0, 0, this.sys.game.config.width, this.sys.game.config.height);
+        /* 
+            Ada 2 Camera yang akan aktif yaitu main camera dan actionCamera
+            secara default kedua camera tsb akan berefek pada objek" yang di buat
+            untuk menghilangkan efeknya berikan ignore pada objek
+        */
+        //menambahkan camera, posisi (0, 0) berada di tengah/pusat objek "persegi panjang"
+        //width dan height mengikuti perhitungan game config
+        this.actionCamera = this.cameras.add(0, 0, gameOptions.gameWidth, gameOptions.gameHeight);
 
         //menambahkan ground
-        this.ground = this.matter.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height, "ground");
+        this.ground = this.matter.add.sprite(gameOptions.gameWidth / 2, gameOptions.gameHeight, "ground");
         this.ground.setBody({
             type: "rectangle",
             width: this.ground.displayWidth,
@@ -78,14 +81,14 @@ export default class PlayGame extends Phaser.Scene {
         this.ground.setStatic(true);
         this.cameras.main.ignore(this.ground);
 
-        //menambahkan movingBook
+        //menambahkan movingBook padding top movingBook = gameOptions.bookHeight
         //menempatkan buku di sebelah kanan dan menganimasikannya
-        //menuju kearah kiri sampai ke posisi BOOKWIDTH
-        this.movingBook = this.add.sprite(this.sys.game.config.width - this.BOOKWIDTH, 1.5 * this.BOOKHEIGHT, "book");
+        //padding animasi left right = 1/2 * gameOptions.bookWidth
+        this.movingBook = this.add.sprite(gameOptions.gameWidth - gameOptions.bookWidth, 1.5 * gameOptions.bookHeight, "book");
         //tween untuk menggerakkan buku
         this.tweens.add({
             targets: this.movingBook,
-            x: this.BOOKWIDTH,
+            x: gameOptions.bookWidth,
             duration: gameOptions.bookSpeed,
             yoyo: true,
             repeat: -1
@@ -93,25 +96,26 @@ export default class PlayGame extends Phaser.Scene {
         this.cameras.main.ignore(this.movingBook);
         
         this.timeText = this.add.bitmapText(10, 10, "font", gameOptions.timeLimit.toString(), 72);
-        this.actionCamera.ignore([this.timeText]);
-        this.bookGroup = this.add.group();
+        this.actionCamera.ignore(this.timeText);
 
-        this.scoreText = this.add.bitmapText(this.sys.game.config.width / 2, this.sys.game.config.height / 2, "smallfont", "Skor: 0", 32);
-        this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
-        this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
+        this.highscoreText = this.add.bitmapText(gameOptions.gameWidth, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
+        this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
+        this.actionCamera.ignore(this.highscoreText);
+
+        this.scoreText = this.add.bitmapText(gameOptions.gameWidth / 2, gameOptions.gameHeight / 2, "smallfont", "Skor: 0", 32);
+        this.scoreText.x = (gameOptions.gameWidth - this.scoreText.width) / 2;
+        this.scoreText.y = (gameOptions.gameHeight - this.scoreText.height) / 2;
         this.actionCamera.ignore(this.scoreText);
         this.scoreText.visible = false;
 
-        this.highscoreText = this.add.bitmapText(this.sys.game.config.width, 10, "smallfont", "Skor Tertinggi: " + this.savedData.score, 32);
-        this.highscoreText.x = this.highscoreText.x - this.highscoreText.width - 10;
-        this.actionCamera.ignore(this.highscoreText);
+        this.bookGroup = this.add.group();
 
         this.input.on("pointerdown", this.dropBook, this);
     }
 
     update() {
-        this.bookGroup.getChildren().forEach(function (book) {
-            if (book.y > this.sys.game.config.height + book.displayHeight) {
+        this.bookGroup.getChildren().forEach(book => {
+            if (book.y > gameOptions.gameHeight + book.displayHeight) {
                 //ketika objek hit bernilai salah (tidak bertumbukkan)
                 //maka kita bisa menjatuhkan buku kembali
                 if (!book.body.hit) {
@@ -156,25 +160,36 @@ export default class PlayGame extends Phaser.Scene {
     }
 
     zoomCamera() {
-        //untuk menentukan setinggi apa buku-nya bertumpuk
+        //menentukan setinggi apa buku-nya bertumpuk
         let maxHeight = 0;
         //mengecek semua buku yang ada di bookGroup
-        this.bookGroup.getChildren().forEach(function (book) {
+        this.bookGroup.getChildren().forEach(book =>  {
             //jika buku tersebut sudah bertumbukkan
             if (book.body.hit) {
-                //memasukkan nilai maxHeight yaitu nilai yang terbesar diantara 2 nilai yang diberikan
+                //rumus menghitung total tumpukkan bukunya berdasarkan tinggi buku
                 maxHeight = Math.max(maxHeight,
                     Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight)
                 );
             }
         }, this);
 
-        this.movingBook.y = this.ground.getBounds().top - maxHeight * this.movingBook.displayHeight - gameOptions.bookHeight;
-        const zoomFactor = gameOptions.bookHeight / (this.ground.getBounds().top - this.movingBook.y);
+        this.movingBook.y = this.ground.getBounds().top - (maxHeight * gameOptions.bookHeight) - gameOptions.distanceFromGround;
 
+        const zoomFactor = gameOptions.distanceFromGround / (this.ground.getBounds().top - this.movingBook.getBounds().top);
+
+        //zoom in/out tergantung zoomFactor kamera dengan durasi 500ms
+        //zoom akan berfocus pada titik pusat actionCamera/titik (0, 0)
         this.actionCamera.zoomTo(zoomFactor, 500);
-        const newHeight = this.sys.game.config.height / zoomFactor;
-        this.actionCamera.pan(this.sys.game.config.width / 2, this.sys.game.config.height / 2 - (newHeight - this.sys.game.config.height) / 2, 500);
+
+        //karena focus actionCamera (0, 0) saat zoomOut posisi bawah kamera seolah terangkat/mempunyai padding
+        //mengatasi hal itu dengan pan actionCamera agar membekukan gerakan actionCamera/tidak seolah terangkat
+        //durasi pan disamakan dengan durasi zoomTo
+        const newHeight = gameOptions.gameHeight / zoomFactor;
+
+        //actionCamera berposisi di (0, 0)
+        //tinggi actionCamera berubah karena zoomTo
+        //jadi kita mengubah posisinya agar tetap dibawah dengan pan dan rumus = (gameOptions.gameHeight / 2) - ((newHeight - gameOptions.gameHeight) / 2)
+        this.actionCamera.pan(gameOptions.gameWidth / 2, (gameOptions.gameHeight / 2) - ((newHeight - gameOptions.gameHeight) / 2), 500);
     }
 
     dropBook() {
@@ -240,8 +255,8 @@ export default class PlayGame extends Phaser.Scene {
 
                     this.bookGroup.getChildren().forEach(function (book) {
                         if (book.body.hit) {
-                            //rumus menghitung tumpukkan bukunya berdasarkan tinggi buku,
-                            //misal: posisi ground = 300, posisi buku berdasarkan tinggi buku = 99,
+                            //rumus menghitung total tumpukkan bukunya berdasarkan tinggi buku
+                            //misal: posisi ground = 300, posisi buku berdasarkan tinggi buku = 99
                             //rumus tumpukan pertama = (300 - (300 - 99)) / 99 = 99/99 = 1. dst untuk tumpukkan atasnya
                             book.sign = Math.round((this.ground.getBounds().top - book.getBounds().top) / book.displayHeight);
                         }
@@ -286,8 +301,8 @@ export default class PlayGame extends Phaser.Scene {
 
             this.score += dek.sign;
             this.scoreText.text = "Skor: " + this.score.toString();
-            this.scoreText.x = (this.sys.game.config.width - this.scoreText.width) / 2;
-            this.scoreText.y = (this.sys.game.config.height - this.scoreText.height) / 2;
+            this.scoreText.x = (gameOptions.gameWidth - this.scoreText.width) / 2;
+            this.scoreText.y = (gameOptions.gameHeight - this.scoreText.height) / 2;
             //this.removeBookSound.play();
 
             if(!this.playOnce) {

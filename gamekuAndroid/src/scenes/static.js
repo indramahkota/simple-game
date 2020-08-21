@@ -3,7 +3,8 @@ import sky from "../assets/sprites/sky.png";
 
 export default class Static extends Phaser.Scene {
     constructor() {
-        //initialize: Phaser.Scene.call(this, { key: 'Static', active: true, dll... });
+        //initialize scene
+        //Phaser.Scene.call(this, { key: 'Static', active: true, dll... });
         super({ key: 'Static', active: true });
     }
 

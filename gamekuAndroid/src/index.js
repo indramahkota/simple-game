@@ -20,7 +20,7 @@ if (window.innerHeight / window.innerWidth >= 1) {
   setGameSize(window.innerWidth / window.innerHeight);
 }
 
-let gameConfig = {
+const gameConfig = {
   type: Phaser.WEBGL,
   scale: {
     mode: Phaser.Scale.FIT,
