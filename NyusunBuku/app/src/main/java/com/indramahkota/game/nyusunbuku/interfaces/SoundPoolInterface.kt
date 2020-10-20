@@ -8,7 +8,7 @@ import com.indramahkota.game.nyusunbuku.R
 
 class SoundPoolInterface(
     private val ctx: Context,
-    private  var soundPool: SoundPool?
+    private var soundPool: SoundPool?
 ) {
     private var hit1: Int? = null
     private var hit2: Int? = null
