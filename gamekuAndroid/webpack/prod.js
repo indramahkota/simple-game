@@ -1,14 +1,15 @@
-const base = require("./base");
-const { merge } = require("webpack-merge");
-const TerserPlugin = require("terser-webpack-plugin");
+const base = require('./base');
+const { merge } = require('webpack-merge');
+const TerserPlugin = require('terser-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = merge(base, {
-  mode: "production",
+  mode: 'production',
   output: {
-    filename: "bundle.min.js",
-    chunkFilename: '[name].min.js',
+    filename: '[name].[contenthash:8].js',
+    chunkFilename: '[name].[contenthash:8].js',
+    publicPath: './',
   },
   devtool: false,
   performance: {
@@ -18,22 +19,21 @@ module.exports = merge(base, {
   optimization: {
     minimizer: [
       new TerserPlugin({
-        test: /\.m?js$/,
+        test: /\.(ts|js)x?$/i,
         terserOptions: {
-          output: {
-            comments: false
-          },
           compress: {
             drop_console: true
-          }
+          },
+          sourceMap: false,
+          mangle: true
         },
-        extractComments: false
+        extractComments: true
       }),
       new OptimizeCssAssetsPlugin({
         assetNameRegExp: /\.css$/g,
-        cssProcessor: require("cssnano"),
+        cssProcessor: require('cssnano'),
         cssProcessorPluginOptions: {
-          preset: ["default", { discardComments: { removeAll: true } }]
+          preset: ['default', { discardComments: { removeAll: true } }],
         },
         canPrint: true
       })
@@ -63,9 +63,9 @@ module.exports = merge(base, {
         test: /\.js$/i,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env"]
+            presets: ['@babel/preset-env']
           }
         }
       }
