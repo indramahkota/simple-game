@@ -1,17 +1,17 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion '30.0.2'
+    compileSdk 31
 
     defaultConfig {
         applicationId "com.indramahkota.game.nyusunbuku"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 9
-        versionName "1.0.8"
+        minSdk 21
+        targetSdk 31
+        versionCode 10
+        versionName "1.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -22,7 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -31,6 +30,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         allWarningsAsErrors = true
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     signingConfigs {
@@ -55,16 +58,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    
-    implementation 'androidx.webkit:webkit:1.3.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
 
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.webkit:webkit:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 
-    testImplementation 'junit:junit:4.13.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

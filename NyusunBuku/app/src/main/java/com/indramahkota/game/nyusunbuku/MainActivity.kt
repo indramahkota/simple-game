@@ -1,6 +1,7 @@
 package com.indramahkota.game.nyusunbuku
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
@@ -11,43 +12,43 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.webkit.WebViewAssetLoader
-import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
-import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
+import com.indramahkota.game.nyusunbuku.databinding.ActivityMainBinding
 import com.indramahkota.game.nyusunbuku.interfaces.SoundPoolInterface
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
     private var soundPool: SoundPool? = null
+    private lateinit var binding: ActivityMainBinding
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        webView.setBackgroundColor(
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.webView.setBackgroundColor(
             ContextCompat.getColor(applicationContext, R.color.colorPrimary)
         )
 
-        webView.settings.javaScriptEnabled = true
-        webView.settings.loadWithOverviewMode = true
-        webView.settings.useWideViewPort = true
-        webView.settings.domStorageEnabled = true
-        webView.settings.blockNetworkImage = false
-        webView.settings.allowFileAccess = true
-        webView.settings.allowContentAccess = true
+        binding.webView.settings.javaScriptEnabled = true
+        binding.webView.settings.loadWithOverviewMode = true
+        binding.webView.settings.useWideViewPort = true
+        binding.webView.settings.domStorageEnabled = true
+        binding.webView.settings.blockNetworkImage = false
+        binding.webView.settings.allowFileAccess = true
+        binding.webView.settings.allowContentAccess = true
 
         val assetLoader = WebViewAssetLoader.Builder()
-            .addPathHandler("/assets/", AssetsPathHandler(this))
-            .addPathHandler("/res/", ResourcesPathHandler(this))
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
+            .addPathHandler("/res/", WebViewAssetLoader.ResourcesPathHandler(this))
             .build()
 
-        webView.webViewClient = object : WebViewClient() {
+        binding.webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    splashImage.visibility = View.GONE
+                    binding.splashImage.visibility = View.GONE
                 }, 1500)
                 super.onPageFinished(view, url)
             }
@@ -61,8 +62,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         soundPool = SoundPool.Builder().setMaxStreams(1).build()
-        webView.addJavascriptInterface(SoundPoolInterface(this, soundPool), "AndroidSoundPool")
-        webView.loadUrl("https://appassets.androidplatform.net/assets/www/index.html")
+        binding.webView.addJavascriptInterface(
+            SoundPoolInterface(this, soundPool),
+            "AndroidSoundPool"
+        )
+        binding.webView.loadUrl("https://appassets.androidplatform.net/assets/www/index.html")
     }
 
     override fun onPause() {
