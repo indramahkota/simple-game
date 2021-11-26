@@ -21,7 +21,7 @@ $ npm install
 $ npm run start
 ```
 
-![Resto Finder](https://raw.githubusercontent.com/indramahkota/indramahkota.github.io/master/assets/githubs/gameku.png)
+![Gameku](https://raw.githubusercontent.com/indramahkota/indramahkota.github.io/master/assets/githubs/gameku.png)
 
 ## License
 
