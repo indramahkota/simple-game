@@ -1,7 +1,8 @@
 # Gameku Nyusun Buku
+
 Simple android game using kotlin, javascript, phaser 3, and webpack.
 
-[![GitHub](https://img.shields.io/github/license/indramahkota/gameku?color=blue)](https://github.com/indramahkota/gameku/blob/master/LICENSE) [![GitHub stars](https://img.shields.io/github/stars/indramahkota/gameku)](https://github.com/indramahkota/gameku/stargazers)  [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
+[![GitHub](https://img.shields.io/github/license/indramahkota/gameku?color=blue)](https://github.com/indramahkota/gameku/blob/master/LICENSE) [![GitHub stars](https://img.shields.io/github/stars/indramahkota/gameku)](https://github.com/indramahkota/gameku/stargazers) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 
 ## How To Use 🔧
 
@@ -12,13 +13,13 @@ From your command line, clone and run command bellow:
 $ git clone https://github.com/indramahkota/gameku.git
 
 # Go into the repository
-$ cd gameku or cd gamekuAndroid
+$ cd gamekuAndroid
 
 # Install dependencies
-$ npm install
+$ yarn install
 
 #Start's development server
-$ npm run start
+$ yarn start
 ```
 
 ![Gameku](https://raw.githubusercontent.com/indramahkota/indramahkota.github.io/master/assets/githubs/gameku.png)
@@ -45,3 +46,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
