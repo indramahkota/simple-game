@@ -1,20 +1,20 @@
-const base = require('./base');
-const { merge } = require('webpack-merge');
-const TerserPlugin = require('terser-webpack-plugin');
-const FileManagerPlugin = require('filemanager-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const base = require("./base");
+const { merge } = require("webpack-merge");
+const TerserPlugin = require("terser-webpack-plugin");
+const FileManagerPlugin = require("filemanager-webpack-plugin");
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = merge(base, {
-  mode: 'production',
+  mode: "production",
   output: {
-    filename: '[name].[contenthash:8].js',
-    chunkFilename: '[name].[contenthash:8].js',
-    publicPath: './',
+    filename: "[name].[contenthash:8].js",
+    chunkFilename: "[name].[contenthash:8].js",
+    publicPath: "./",
   },
   devtool: false,
   performance: {
     maxEntrypointSize: 900000,
-    maxAssetSize: 900000
+    maxAssetSize: 900000,
   },
   optimization: {
     minimizer: [
@@ -22,40 +22,45 @@ module.exports = merge(base, {
         test: /\.(ts|js)x?$/i,
         terserOptions: {
           compress: {
-            drop_console: true
+            drop_console: true,
           },
           sourceMap: false,
-          mangle: true
+          mangle: true,
         },
-        extractComments: true
+        extractComments: true,
       }),
       new OptimizeCssAssetsPlugin({
         assetNameRegExp: /\.css$/g,
-        cssProcessor: require('cssnano'),
+        cssProcessor: require("cssnano"),
         cssProcessorPluginOptions: {
-          preset: ['default', { discardComments: { removeAll: true } }],
+          preset: ["default", { discardComments: { removeAll: true } }],
         },
-        canPrint: true
-      })
+        canPrint: true,
+      }),
     ],
     splitChunks: {
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/](phaser)[\\/]/,
-          name: 'phaser',
-          chunks: 'all',
-        }
-      }
-    }
+          name: "phaser",
+          chunks: "all",
+        },
+      },
+    },
   },
   plugins: [
     new FileManagerPlugin({
-      onEnd: {
-        copy: [
-          { source: 'dist', destination: '../NyusunBuku/app/src/main/assets/www/' }
-        ]
-      }
-    })
+      events: {
+        onEnd: {
+          copy: [
+            {
+              source: "dist",
+              destination: "../gameku-android/app/src/main/assets/www/",
+            },
+          ],
+        },
+      },
+    }),
   ],
   module: {
     rules: [
@@ -63,12 +68,12 @@ module.exports = merge(base, {
         test: /\.js$/i,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      }
-    ]
-  }
+            presets: ["@babel/preset-env"],
+          },
+        },
+      },
+    ],
+  },
 });

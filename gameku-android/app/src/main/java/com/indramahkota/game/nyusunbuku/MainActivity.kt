@@ -64,7 +64,7 @@ class MainActivity : Activity() {
         soundPool = SoundPool.Builder().setMaxStreams(1).build()
         binding.webView.addJavascriptInterface(
             SoundPoolInterface(this, soundPool),
-            "AndroidSoundPool"
+            "Android"
         )
         binding.webView.loadUrl("https://appassets.androidplatform.net/assets/www/index.html")
     }

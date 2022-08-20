@@ -2,11 +2,11 @@ import "./index.css";
 import gameOptions from "./utilities/game-options.js";
 
 import Phaser from "phaser";
-import Static from "./scenes/static.js";
-import Menu from "./scenes/menu.js";
 import PlayGame from "./scenes/game.js";
+import Menu from "./scenes/menu.js";
+import Static from "./scenes/static.js";
 
-const setGameSize = ratio => {
+const setGameSize = (ratio) => {
   if (ratio < 1.5) {
     gameOptions.gameWidth = gameOptions.gameHeight / ratio;
   } else {
@@ -26,21 +26,21 @@ const gameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: gameOptions.gameWidth,
-    height: gameOptions.gameHeight
+    height: gameOptions.gameHeight,
   },
   physics: {
     default: "matter",
     matter: {
       gravity: {
-        y: gameOptions.gravity
-      }
-    }
+        y: gameOptions.gravity,
+      },
+    },
   },
   audio: {
     noAudio: true,
-    disableWebAudio: true
+    disableWebAudio: true,
   },
-  scene: [Static, Menu, PlayGame]
+  scene: [Static, Menu, PlayGame],
 };
 
 new Phaser.Game(gameConfig);

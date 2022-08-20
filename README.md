@@ -13,7 +13,7 @@ From your command line, clone and run command bellow:
 $ git clone https://github.com/indramahkota/gameku.git
 
 # Go into the repository
-$ cd gamekuAndroid
+$ cd gameku-phaser
 
 # Install dependencies
 $ yarn install

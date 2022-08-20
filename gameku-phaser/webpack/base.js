@@ -4,7 +4,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   entry: {
-    index: './src/index.js'
+    index: "./src/index.js",
   },
   mode: "development",
   devtool: "eval-source-map",
@@ -12,35 +12,35 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: [/\.vert$/i, /\.frag$/i],
-        use: "raw-loader"
+        use: "raw-loader",
       },
       {
         test: /\.(gif|png|jpe?g|svg|xml|fnt|mp3|ogg|)$/i,
         use: [
           {
-            loader: 'file-loader',
+            loader: "file-loader",
             options: {
-              name: 'assets/[contenthash:5].[ext]',
+              name: "assets/[contenthash:5].[ext]",
             },
           },
         ],
-      }
-    ]
+      },
+    ],
   },
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       CANVAS_RENDERER: JSON.stringify(true),
-      WEBGL_RENDERER: JSON.stringify(true)
+      WEBGL_RENDERER: JSON.stringify(true),
     }),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "index.html",
-      minify: { collapseWhitespace: true, removeComments: true }
-    })
-  ]
+      minify: { collapseWhitespace: true, removeComments: true },
+    }),
+  ],
 };

@@ -12,3 +12,7 @@ node_modules/
 # Build
 dist/
 /npm-debug.log
+
+# Ignore artifacts:
+build
+coverage
