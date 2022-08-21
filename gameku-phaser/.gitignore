@@ -1,18 +1,18 @@
-# System and IDE files
-Thumbs.db
+/node_modules
+/specs
+/.firebase
+/dist
+/build
+/bin
+.firebaserc
+firebase.json
 .DS_Store
+*.log
 .idea
-*.suo
-*.sublime-project
-*.sublime-workspace
-
-# Vendors
-node_modules/
-
-# Build
-dist/
-/npm-debug.log
-
-# Ignore artifacts:
-build
-coverage
+.vscode
+.cache
+.eslintcache
+package-lock.json
+/coverage
+/e2e/outputs
+yarn.lock
