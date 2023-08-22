@@ -6,8 +6,8 @@ plugins {
 }
 
 val androidApplicationId by extra { "com.indramahkota.game.nyusunbuku" }
-val androidApplicationVersionCode by extra { 1 }
-val androidApplicationVersionName by extra { "0.0.0" }
+val androidApplicationVersionCode by extra { 12 }
+val androidApplicationVersionName by extra { "1.2.0" }
 val secretPropertiesFile by extra { "../secrets.properties" }
 
 android {
