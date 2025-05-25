@@ -1,5 +1,6 @@
 package com.indramahkota.game.nyusunbuku
 
+import android.annotation.SuppressLint
 import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
   private var soundPool: SoundPool? = null
   private lateinit var binding: ActivityMainBinding
 
+  @SuppressLint("SetJavaScriptEnabled")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -104,7 +106,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   companion object {
-    private const val LOAD_DELAY = 1500L
+    private const val LOAD_DELAY = 500L
     private const val BACK_PRESS_DELAY = 2000L
   }
 }

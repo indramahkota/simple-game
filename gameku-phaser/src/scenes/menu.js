@@ -18,19 +18,21 @@ export default class Menu extends Phaser.Scene {
       "mulai_button"
     );
     this.buttonMulai
-      .setDisplaySize(255, 60)
       .setInteractive()
       .on(Phaser.Input.Events.POINTER_DOWN, () => {
-        this.buttonMulai.setDisplaySize(0.9 * 255, 0.9 * 60);
+        this.buttonMulai.scaleX = 0.9;
+        this.buttonMulai.scaleY = 0.9;
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
-        this.buttonMulai.setDisplaySize(255, 60);
+        this.buttonMulai.scaleX = 1;
+        this.buttonMulai.scaleY = 1;
 
         this.scene.setActive(false, "Menu");
         this.scene.start("PlayGame");
       })
       .on(Phaser.Input.Events.POINTER_OUT, () => {
-        this.buttonMulai.setDisplaySize(255, 60);
+        this.buttonMulai.scaleX = 1;
+        this.buttonMulai.scaleY = 1;
       });
   }
 }

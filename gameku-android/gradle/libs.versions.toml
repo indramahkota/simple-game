@@ -1,0 +1,24 @@
+[versions]
+appcompat = "1.7.0"
+constraintlayout = "2.2.1"
+espressoCore = "3.6.1"
+indramahkota = "1.4.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+kotlin = "2.1.21"
+coreKtx = "1.16.0"
+webkit = "1.13.0"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+junit = { module = "junit:junit", version.ref = "junit" }
+
+[plugins]
+convention-android-app = { id = "android.app", version.ref = "indramahkota" }
+convention-android-config = { id = "android.config", version.ref = "indramahkota" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

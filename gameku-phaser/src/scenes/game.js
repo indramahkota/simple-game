@@ -99,8 +99,6 @@ export default class PlayGame extends Phaser.Scene {
       this.ground.getBounds().top - gameOptions.distanceFromGround,
       "book"
     );
-    this.movingBook.scaleX = 0.5;
-    this.movingBook.scaleY = 0.5;
 
     //tween untuk menggerakkan buku
     this.tweens.add({
@@ -297,8 +295,6 @@ export default class PlayGame extends Phaser.Scene {
       this.movingBook.y,
       "book"
     );
-    fallingBook.scaleX = 0.5;
-    fallingBook.scaleY = 0.5;
     fallingBook.setBounce(0);
     fallingBook.setDensity(100);
     fallingBook.body.isBook = true;
@@ -404,7 +400,6 @@ export default class PlayGame extends Phaser.Scene {
       this.cameras.main.ignore(num);
 
       const frame = this.matter.add.sprite(book.x, book.y, "book_frame");
-      frame.setDisplaySize(0.5 * 175, 0.5 * 198);
       frame.rotation = book.rotation;
       this.cameras.main.ignore(frame);
       frame.setStatic(true);

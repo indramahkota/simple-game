@@ -1,6 +1,6 @@
 const gameOptions = {
   gravity: 1,
-  timeLimit: 10,
+  timeLimit: 60,
   bookSpeed: 1000,
   gameWidth: 640,
   gameHeight: 960,

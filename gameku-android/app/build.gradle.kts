@@ -1,14 +1,11 @@
-import com.indramahkota.gradle.common.utils.loadPropertiesFile
-
 plugins {
-  alias(indra.plugins.convention.android.app)
-  alias(libs.plugins.secret.gradle.plugin)
+  alias(libs.plugins.convention.android.app)
+  alias(libs.plugins.kotlin.android)
 }
 
 val androidApplicationId by extra { "com.indramahkota.game.nyusunbuku" }
-val androidApplicationVersionCode by extra { 12 }
-val androidApplicationVersionName by extra { "1.2.0" }
-val secretPropertiesFile by extra { "../secrets.properties" }
+val androidApplicationVersionCode by extra { 13 }
+val androidApplicationVersionName by extra { "1.3.0" }
 
 android {
   namespace = androidApplicationId
@@ -19,39 +16,19 @@ android {
     versionName = androidApplicationVersionName
   }
 
-  signingConfigs {
-    create("release") {
-      val propertiesFile = loadPropertiesFile(secretPropertiesFile)
-      keyAlias = propertiesFile.getProperty("KEY_ALIAS")
-      keyPassword = propertiesFile.getProperty("KEY_PASSWORD")
-      storeFile = file(propertiesFile.getProperty("STORE_FILE"))
-      storePassword = propertiesFile.getProperty("STORE_PASSWORD")
-    }
-  }
-
-  buildTypes {
-    release {
-      signingConfig = signingConfigs.getByName("release")
-    }
-  }
-
   buildFeatures {
     viewBinding = true
   }
 }
 
-secrets {
-  propertiesFileName = "secrets.properties"
-  defaultPropertiesFileName = "secrets.defaults.properties"
-}
-
 dependencies {
-  implementation("androidx.webkit:webkit:1.7.0")
-  implementation("androidx.appcompat:appcompat:1.6.1")
-  implementation("androidx.core:core-ktx:1.10.1")
-  implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+  implementation(libs.androidx.webkit)
+  implementation(libs.androidx.appcompat)
+  implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.constraintlayout)
+  implementation(libs.androidx.core.ktx)
 
-  testImplementation("junit:junit:4.13.2")
-  androidTestImplementation("androidx.test.ext:junit:1.1.5")
-  androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+  testImplementation(libs.junit)
+  androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.espresso.core)
 }
