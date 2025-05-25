@@ -1,17 +1,12 @@
 Privacy Policy
 ==============
 
-Indra Mahkota ("we," "our," or "us") has developed the Nyusun Buku app ("the App") as a free service, provided for your use as is. This Privacy Policy is designed to inform you about how we collect, use, and protect your personal information.
+Indra Mahkota ("we," "our," or "us") has developed the Simple Game app ("the App") as a free service, provided for your use as is. This Privacy Policy is designed to inform you about how we collect, use, and protect your personal information.
 
 Information Collection and Use
 ------------------------------
 
 We do not collect any personally identifiable information from users of the App.
-
-Third-Party Services
---------------------
-
-The App may utilize third-party services, such as Google Play Services, to enhance its functionality. These services may collect data for purposes of identification and service improvement. We encourage you to review the privacy policies of these third-party providers to understand their data practices.
 
 Cookies
 -------
@@ -33,4 +28,4 @@ Contact Us
 
 If you have any questions or concerns about this Privacy Policy, please contact us at [indramahkota1@gmail.com](mailto:indramahkota1@gmail.com).
 
-By using the Nyusun Buku app, you agree to the terms and conditions outlined in this Privacy Policy. If you do not agree with this Policy, please do not use the App.
+By using the Simple Game app, you agree to the terms and conditions outlined in this Privacy Policy. If you do not agree with this Policy, please do not use the App.
