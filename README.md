@@ -1,4 +1,4 @@
-# simple-game Nyusun Buku
+# Simple Game
 
 Simple android game using kotlin, javascript, phaser 3, and webpack.
 
